@@ -1,5 +1,5 @@
 <template>
-  <v-container style="background-color: green; height: 80%;">
+  <v-container style="background-color: #363636; height: 80%;">
     <!-- placeholder -->
     asdasd
   </v-container>

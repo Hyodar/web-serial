@@ -1,5 +1,5 @@
 <template>
-  <v-app dark>
+  <v-app dark style="background-color: #262626;">
     <v-app-bar app>
       <div class="d-flex align-center">
         <v-img
@@ -20,27 +20,26 @@
           width="100"
         />
       </div>
+
+      <v-spacer></v-spacer>
+
+      <v-app-bar-nav-icon
+        v-on:click.stop="drawer = !drawer"
+      ></v-app-bar-nav-icon>
     </v-app-bar>
 
     <v-navigation-drawer v-model="drawer" app right width="350">
       <v-list dense>
         <v-list-item>
-          <v-list-item-action>
+          <v-list-item-action v-on:click="drawer = false">
             <v-icon>mdi-exit-to-app</v-icon>
           </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Open Temporary Drawer</v-list-item-title>
-          </v-list-item-content>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
     <v-content>
-      <v-snackbar v-model="noWebSerial" color="error" :timeout="0" top>
-        Your browser doesn't seem to have the WebSerial API enabled.
-        <v-btn text v-on:click="redirectToGuide">Enable it here!</v-btn>
-        <v-btn text v-on:click="noWebSerial = false"> Close </v-btn>
-      </v-snackbar>
+      <Snackbar v-bind:content="snackbarMessage" />
       <SerialChat />
       <SerialInput />
     </v-content>
@@ -50,22 +49,28 @@
 <script>
 import SerialChat from "./components/SerialChat";
 import SerialInput from "./components/SerialInput";
+import Snackbar from "./components/Snackbar";
+
+import SnackbarMessage from "./classes/SnackbarMessage";
 
 export default {
   name: "App",
 
   components: {
     SerialChat,
-    SerialInput
+    SerialInput,
+    Snackbar
   },
 
   mounted() {
-    this.noWebSerial = !("serial" in navigator);
+    if (!("serial" in navigator)) {
+      this.snackbarSnackbarMessage = SnackbarMessage.Error.NoWebSerial;
+    }
   },
 
   data: () => ({
-    noWebSerial: false,
-    drawer: true
+    snackbarMessage: null,
+    drawer: false
   }),
 
   methods: {
