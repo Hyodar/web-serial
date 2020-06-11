@@ -3,7 +3,7 @@
 A serial monitor you can actually use with **just your browser**.
 
 **No** additional downloads and **no** hassle.
-Just go to [hyodar.github.io/webserial](hyodar.github.io/webserial) and enjoy.
+Just go to [hyodar.github.io/webserial](https://hyodar.github.io/webserial) and enjoy.
 
 ## How to use
 
