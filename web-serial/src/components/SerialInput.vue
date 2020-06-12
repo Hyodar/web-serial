@@ -3,6 +3,7 @@
     <v-textarea
       v-model="message"
       outlined
+      hide-details
       autocomplete="off"
       @keyup.enter.exact="sendMessage()"
     ></v-textarea>
