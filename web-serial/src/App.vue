@@ -35,12 +35,17 @@
             <v-icon>mdi-exit-to-app</v-icon>
           </v-list-item-action>
         </v-list-item>
+        <v-list-item>
+          <v-btn v-on:click="showAsTerminal = !showAsTerminal">
+            Change Display Mode
+          </v-btn>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
     <v-content>
       <Snackbar :content="snackbarMessage" />
-      <SerialChat ref="chat" />
+      <SerialChat ref="chat" :showAsTerminal="showAsTerminal" />
       <SerialInput v-on:sendMessage="sendMessage" />
     </v-content>
   </v-app>
@@ -69,8 +74,9 @@ export default {
   },
 
   data: () => ({
-    drawer: false,
-    snackbarMessage: null
+    drawer: true,
+    snackbarMessage: null,
+    showAsTerminal: false
   }),
 
   methods: {

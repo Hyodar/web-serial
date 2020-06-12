@@ -10,8 +10,8 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "vue": "^2.6.11",
-    "vue-chat-scroll": "^1.4.0",
     "vue-virtual-scroller": "^1.0.10",
+    "vuebar": "0.0.20",
     "vuetify": "^2.2.11"
   },
   "devDependencies": {
