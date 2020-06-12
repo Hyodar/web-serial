@@ -39,9 +39,9 @@
     </v-navigation-drawer>
 
     <v-content>
-      <Snackbar v-bind:content="snackbarMessage" />
-      <SerialChat />
-      <SerialInput />
+      <Snackbar :content="snackbarMessage" />
+      <SerialChat ref="chat" />
+      <SerialInput v-on:sendMessage="sendMessage" />
     </v-content>
   </v-app>
 </template>
@@ -69,13 +69,13 @@ export default {
   },
 
   data: () => ({
-    snackbarMessage: null,
-    drawer: false
+    drawer: false,
+    snackbarMessage: null
   }),
 
   methods: {
-    redirectToGuide() {
-      window.location.href = "https://duckduckgo.com";
+    sendMessage(messageContent) {
+      this.$refs.chat.addEntry(messageContent, "self");
     }
   }
 };
