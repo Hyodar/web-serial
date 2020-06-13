@@ -25,27 +25,25 @@
       </DynamicScrollerItem>
     </DynamicScroller>
     -->
-    <div ref="scrollbar" class="scroller" v-bar>
-      <v-slide-x-transition class="py-0" group>
-        <SerialChatMessage
-          v-for="(item, idx) in messages"
-          v-bind:key="idx"
-          :time="item.time"
-          :content="item.content"
-          :author="item.author"
-          :showAsTerminal="showAsTerminal"
-        />
-      </v-slide-x-transition>
-    </div>
+    <v-card outlined style="background-color: transparent">
+      <div ref="scrollbar" class="scroller" v-bar>
+        <v-slide-x-transition class="py-0" group>
+          <SerialChatMessage
+            v-for="(item, idx) in messages"
+            v-bind:key="idx"
+            :id="item.id"
+            :time="item.time"
+            :content="item.content"
+            :author="item.author"
+            :showAsTerminal="showAsTerminal"
+          />
+        </v-slide-x-transition>
+      </div>
+    </v-card>
   </v-container>
 </template>
 
 <style>
-.scroller {
-  scroll-behavior: smooth;
-  overflow-y: scroll;
-}
-
 .vb > .vb-dragger {
   z-index: 5;
   width: 12px;
@@ -93,6 +91,10 @@
 .vb.vb-dragging-phantom > .vb-dragger > .vb-dragger-styler {
   background-color: rgba(255, 255, 255, 0.5);
 }
+
+.vb-content {
+  scroll-behavior: smooth;
+}
 </style>
 
 <script>
@@ -101,23 +103,68 @@ import SerialChatMessage from "./SerialChatMessage";
 export default {
   name: "SerialChat",
 
-  props: ["showAsTerminal"],
+  props: ["showAsTerminal", "messageBufferSize"],
 
   components: {
     SerialChatMessage
   },
 
   data: () => ({
-    messages: []
+    messages: [],
+    msgIdCount: 0,
+    lastScrollPosition: 0,
+    scrollPosition: 0,
+    lastScrollMessageIndex: 0
   }),
+
+  watch: {
+    scrollPosition: function(scrollPos) {
+      let msg = null;
+
+      if (scrollPos > this.lastScrollPosition) {
+        for (let i = this.lastScrollMessageIndex; i < this.messages.length; i++) {
+          msg = document.getElementById(`msg-${this.messages[i].id}`);
+          if (msg.offsetTop >= scrollPos) {
+            this.lastScrollMessageIndex = i;
+            break;
+          }
+        }
+      }
+      else {
+        for (let i = this.lastScrollMessageIndex; i >= 0; i--) {
+          msg = document.getElementById(`msg-${this.messages[i].id}`);
+          if (msg.offsetTop <= scrollPos) {
+            this.lastScrollMessageIndex = i;
+            break;
+          }
+        }
+      }
+
+      this.lastScrollPosition = scrollPos;
+    },
+
+    showAsTerminal: function() {
+      setTimeout(() => {
+        const scrollbarTarget = this.$refs.scrollbar._vuebarState.el2;
+        const scrollTo = `msg-${this.messages[this.lastScrollMessageIndex].id}`;
+        scrollbarTarget.scrollTop = document.getElementById(scrollTo).offsetTop;
+      }, 100);
+    }
+  },
 
   methods: {
     addEntry(msg, author) {
       this.messages.push({
+        id: this.msgIdCount++,
         time: this.getCurrentTime(),
         content: msg,
         author: author
       });
+
+      while (this.messages.length > this.messageBufferSize) {
+        this.messages.shift();
+      }
+
       setTimeout(this.scrollToBottom.bind(this), 100);
     },
 
@@ -139,11 +186,18 @@ export default {
       const vContent = document.querySelector(".v-content");
       const vContentHeight = getComputedStyle(vContent).height;
 
-      scroller.style.height = `${parseFloat(vContentHeight, 10) * 0.8 * 0.9}px`;
+      scroller.style.height = `${parseFloat(vContentHeight, 10) * 0.8 * 0.85}px`;
     };
 
     scrollerToFixedHeight();
     window.addEventListener("resize", scrollerToFixedHeight);
+
+    const scrollbarTarget = this.$refs.scrollbar._vuebarState.el2;
+
+    this.lastScrollPosition = scrollbarTarget.scrollHeight;
+    scrollbarTarget.addEventListener("scroll", event => {
+      this.scrollPosition = event.target.scrollTop;
+    });
   }
 };
 </script>

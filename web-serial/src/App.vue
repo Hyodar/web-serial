@@ -45,7 +45,11 @@
 
     <v-content>
       <Snackbar :content="snackbarMessage" />
-      <SerialChat ref="chat" :showAsTerminal="showAsTerminal" />
+      <SerialChat
+        ref="chat"
+        :showAsTerminal="showAsTerminal"
+        :messageBufferSize="500"
+      />
       <SerialInput v-on:sendMessage="sendMessage" />
     </v-content>
   </v-app>
