@@ -1,6 +1,6 @@
 <template>
   <v-card
-    v-if="!showAsTerminal"
+    v-if="logMode === LogMode.CHAT"
     :id="`msg-${id}`"
     dense
     :color="colors[author]"
@@ -14,12 +14,16 @@
       </v-card-subtitle>
     </div>
     <v-card-text class="pa-0 pd-1 pl-2 mt-0 offwhite-text">
-      {{ content }}
+      {{ computedContent }}
     </v-card-text>
   </v-card>
-  <span v-else :id="`msg-${id}`" style="font-family: monospace;">
+  <span
+    v-else-if="logMode === LogMode.TERMINAL"
+    :id="`msg-${id}`"
+    style="font-family: monospace;"
+  >
     <span :class="[colors[author]]"> >> </span>
-    {{ id }} - {{ time }} - {{ content }}
+    {{ id }} - {{ time }} - {{ computedContent }}
     <br />
   </span>
 </template>
@@ -36,13 +40,33 @@ const colors = Object.freeze({
   serial: "secondary"
 });
 
+import DisplayMode from "../classes/DisplayMode";
+import LogMode from "../classes/LogMode";
+
+import { textToHex, textToBinary } from "../utils/textConversion";
+
 export default {
   name: "SerialChatMessage",
 
-  props: ["id", "content", "time", "author", "showAsTerminal"],
+  props: ["id", "content", "time", "author", "logMode", "displayMode"],
 
   data: () => ({
-    colors: colors
-  })
+    colors: colors,
+    LogMode: LogMode
+  }),
+
+  computed: {
+    computedContent: function() {
+      if (this.displayMode === DisplayMode.LITERAL) {
+        return this.content;
+      }
+      else if (this.displayMode === DisplayMode.HEX) {
+        return textToHex(this.content);
+      }
+      else {
+        return textToBinary(this.content);
+      }
+    }
+  }
 };
 </script>

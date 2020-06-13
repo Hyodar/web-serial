@@ -42,11 +42,30 @@
       <v-divider class="ma-2"></v-divider>
 
       <v-row class="ma-3" justify="center">
-        <v-btn v-on:click="showAsTerminal = true" :class="(showAsTerminal)? 'grey darken-2' : undefined">
-          Terminal
+        <v-btn
+          tile
+          v-for="mode in logModeOptions"
+          v-bind:key="mode.val"
+          v-on:click="logMode = mode.val"
+          :class="(mode.val === logMode)? 'grey darken-2' : undefined">
+          {{ mode.name }}
         </v-btn>
-        <v-btn v-on:click="showAsTerminal = false" :class="(showAsTerminal)? undefined : 'grey darken-2'">
-          Chat
+      </v-row>
+
+      <v-row class="ma-1 mt-5" justify="center">
+        <div class="text-button"> Display Mode </div>
+      </v-row>
+
+      <v-divider class="ma-2"></v-divider>
+
+      <v-row class="ma-3" justify="center">
+        <v-btn
+          tile
+          v-for="mode in displayModeOptions"
+          v-bind:key="mode.val"
+          v-on:click="displayMode = mode.val"
+          :class="(mode.val === displayMode)? 'grey darken-2' : undefined">
+          {{ mode.name }}
         </v-btn>
       </v-row>
     </v-navigation-drawer>
@@ -55,7 +74,8 @@
       <Snackbar :content="snackbarMessage" />
       <SerialChat
         ref="chat"
-        :showAsTerminal="showAsTerminal"
+        :logMode="logMode"
+        :displayMode="displayMode"
         :messageBufferSize="500"
       />
       <SerialInput v-on:sendMessage="sendMessage" />
@@ -69,6 +89,8 @@ import SerialInput from "./components/SerialInput";
 import Snackbar from "./components/Snackbar";
 
 import SnackbarMessage from "./classes/SnackbarMessage";
+import DisplayMode from "./classes/DisplayMode";
+import LogMode from "./classes/LogMode";
 
 export default {
   name: "App",
@@ -88,7 +110,21 @@ export default {
   data: () => ({
     drawer: true,
     snackbarMessage: null,
-    showAsTerminal: false
+    showAsTerminal: false,
+
+    logModeOptions: [
+      { name: "TERMINAL", val: LogMode.TERMINAL },
+      { name: "CHAT", val: LogMode.CHAT }
+    ],
+    logMode: 1,
+
+    displayModeOptions: [
+      { name: "LITERAL", val: DisplayMode.LITERAL },
+      { name: "HEX", val: DisplayMode.HEX },
+      { name: "BINARY", val: DisplayMode.BINARY }
+    ],
+    displayMode: 0,
+
   }),
 
   methods: {

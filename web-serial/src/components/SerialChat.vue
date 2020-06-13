@@ -35,7 +35,8 @@
             :time="item.time"
             :content="item.content"
             :author="item.author"
-            :showAsTerminal="showAsTerminal"
+            :logMode="logMode"
+            :displayMode="displayMode"
           />
         </v-slide-x-transition>
       </div>
@@ -103,7 +104,7 @@ import SerialChatMessage from "./SerialChatMessage";
 export default {
   name: "SerialChat",
 
-  props: ["showAsTerminal", "messageBufferSize"],
+  props: ["logMode", "displayMode", "messageBufferSize"],
 
   components: {
     SerialChatMessage
@@ -143,14 +144,12 @@ export default {
       this.lastScrollPosition = scrollPos;
     },
 
-    showAsTerminal: function() {
-      setTimeout(() => {
-        if(this.msgIdCount) {
-          const scrollbarTarget = this.$refs.scrollbar._vuebarState.el2;
-          const scrollTo = `msg-${this.messages[this.lastScrollMessageIndex].id}`;
-          scrollbarTarget.scrollTop = document.getElementById(scrollTo).offsetTop;
-        }
-      }, 100);
+    logMode: function() {
+      this.scrollToCurrentMessage();
+    },
+
+    displayMode: function() {
+      this.scrollToCurrentMessage();
     }
   },
 
@@ -179,6 +178,16 @@ export default {
       const date = new Date();
 
       return `[${date.toLocaleDateString()} - ${date.toLocaleTimeString()}]`;
+    },
+
+    scrollToCurrentMessage() {
+      setTimeout(() => {
+        if(this.msgIdCount) {
+          const scrollbarTarget = this.$refs.scrollbar._vuebarState.el2;
+          const scrollTo = `msg-${this.messages[this.lastScrollMessageIndex].id}`;
+          scrollbarTarget.scrollTop = document.getElementById(scrollTo).offsetTop;
+        }
+      }, 100);
     }
   },
 
