@@ -145,9 +145,11 @@ export default {
 
     showAsTerminal: function() {
       setTimeout(() => {
-        const scrollbarTarget = this.$refs.scrollbar._vuebarState.el2;
-        const scrollTo = `msg-${this.messages[this.lastScrollMessageIndex].id}`;
-        scrollbarTarget.scrollTop = document.getElementById(scrollTo).offsetTop;
+        if(this.msgIdCount) {
+          const scrollbarTarget = this.$refs.scrollbar._vuebarState.el2;
+          const scrollTo = `msg-${this.messages[this.lastScrollMessageIndex].id}`;
+          scrollbarTarget.scrollTop = document.getElementById(scrollTo).offsetTop;
+        }
       }, 100);
     }
   },
@@ -183,7 +185,7 @@ export default {
   mounted() {
     const scrollerToFixedHeight = () => {
       const scroller = document.querySelector(".scroller");
-      const vContent = document.querySelector(".v-content");
+      const vContent = document.querySelector(".v-main");
       const vContentHeight = getComputedStyle(vContent).height;
 
       scroller.style.height = `${parseFloat(vContentHeight, 10) * 0.8 * 0.85}px`;

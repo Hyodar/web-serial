@@ -29,21 +29,29 @@
     </v-app-bar>
 
     <v-navigation-drawer v-model="drawer" app right width="350">
-      <v-list dense>
-        <v-list-item>
-          <v-list-item-action v-on:click="drawer = false">
-            <v-icon>mdi-exit-to-app</v-icon>
-          </v-list-item-action>
-        </v-list-item>
-        <v-list-item>
-          <v-btn v-on:click="showAsTerminal = !showAsTerminal">
-            Change Display Mode
-          </v-btn>
-        </v-list-item>
-      </v-list>
+      <v-row class="ma-3">
+        <v-btn v-on:click="drawer = false" icon>
+          <v-icon>mdi-exit-to-app</v-icon>
+        </v-btn>
+      </v-row>
+
+      <v-row class="ma-1" justify="center">
+        <div class="text-button"> Display Mode </div>
+      </v-row>
+
+      <v-divider class="ma-2"></v-divider>
+
+      <v-row class="ma-3" justify="center">
+        <v-btn v-on:click="showAsTerminal = true" :class="(showAsTerminal)? 'grey darken-2' : undefined">
+          Terminal
+        </v-btn>
+        <v-btn v-on:click="showAsTerminal = false" :class="(showAsTerminal)? undefined : 'grey darken-2'">
+          Chat
+        </v-btn>
+      </v-row>
     </v-navigation-drawer>
 
-    <v-content>
+    <v-main>
       <Snackbar :content="snackbarMessage" />
       <SerialChat
         ref="chat"
@@ -51,7 +59,7 @@
         :messageBufferSize="500"
       />
       <SerialInput v-on:sendMessage="sendMessage" />
-    </v-content>
+    </v-main>
   </v-app>
 </template>
 
