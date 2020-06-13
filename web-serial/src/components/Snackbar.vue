@@ -1,7 +1,7 @@
 <template>
   <v-snackbar
     top
-    v-if="content"
+    v-if="isOn"
     v-model="content"
     :color="content.color"
     :timeout="content.timeout"
@@ -15,7 +15,7 @@
     >
       {{ button.text }}
     </v-btn>
-    <v-btn text v-on:click="content = null"> Close </v-btn>
+    <v-btn text v-on:click="isOn = false"> Close </v-btn>
   </v-snackbar>
 </template>
 
@@ -27,6 +27,12 @@ export default {
 
   data: () => ({
     isOn: false
-  })
+  }),
+
+  watch: {
+    content: function() {
+      this.isOn = true;
+    }
+  }
 };
 </script>
