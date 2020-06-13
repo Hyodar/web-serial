@@ -11,7 +11,31 @@ const SnackbarMessage = Object.freeze({
           }
         }
       ],
-      timeout: 0
+      timeout: -1
+    },
+    NoPortSelected: {
+      color: "error",
+      content: "No serial port selected. Connection stopped.",
+      timeout: 2000
+    },
+    Custom: (description) => ({
+      color: "error",
+      content: description,
+      timeout: -1
+    })
+  },
+  Success: {
+    SerialConnectionOpened: {
+      color: "success",
+      content: "Successfully opened a serial connection!",
+      timeout: 2000
+    }
+  },
+  Warning: {
+    SerialConnectionClosed: {
+      color: "warning",
+      content: "The serial connection was closed.",
+      timeout: 5000
     }
   }
 });
