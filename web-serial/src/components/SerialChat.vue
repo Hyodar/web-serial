@@ -1,30 +1,5 @@
 <template>
   <v-container style="background-color: #363636; height: calc(100% - 150px);" id="chatContainer">
-    <!--
-    <DynamicScroller
-      ref="scroller"
-      :items="messages"
-      :min-item-size="24"
-      class="scroller"
-      @resize="scrollToBottom"
-    >
-      <DynamicScrollerItem
-        slot-scope="{ item, index, active }"
-        :item="item"
-        :active="active"
-        :data-index="index"
-        :size-dependencies="[
-          item.content,
-        ]"
-      >
-        <SerialChatMessage
-          :time="item.time"
-          :content="item.content"
-          :author="item.author"
-        />
-      </DynamicScrollerItem>
-    </DynamicScroller>
-    -->
     <v-card outlined style="background-color: transparent">
       <div ref="scrollbar" class="scroller" v-bar>
         <v-slide-x-transition class="py-0" group>
@@ -104,7 +79,7 @@ import SerialChatMessage from "./SerialChatMessage";
 export default {
   name: "SerialChat",
 
-  props: ["logMode", "displayMode", "messagebuffersize"],
+  props: ["logMode", "displayMode", "messageBufferSize"],
 
   components: {
     SerialChatMessage
@@ -115,7 +90,11 @@ export default {
     msgIdCount: 0,
     lastScrollPosition: 0,
     scrollPosition: 0,
-    lastScrollMessageIndex: 0
+    lastScrollMessageIndex: 0,
+    lastSentMessage: {
+      "self": { index: 0, time: 0 },
+      "serial": { index: 0, time: 0 }
+    }
   }),
 
   watch: {
@@ -155,15 +134,29 @@ export default {
 
   methods: {
     addEntry(msg, author) {
-      this.messages.push({
-        id: this.msgIdCount++,
-        time: this.getCurrentTime(),
-        content: msg,
-        author: author
-      });
+      const elapsedTime = Date.now() - this.lastSentMessage[author].time;
 
-      while (this.messages.length > this.messagebuffersize) {
-        this.messages.shift();
+      if (elapsedTime < 500) {
+        // same message
+        this.messages[this.lastSentMessage[author].index].content += msg;
+        this.lastSentMessage[author].time = Date.now();
+      }
+      else {
+        this.messages.push({
+          id: this.msgIdCount++,
+          time: this.getCurrentTime(),
+          content: msg,
+          author: author
+        });
+
+        while (this.messages.length > this.messageBufferSize) {
+          this.messages.shift();
+        }
+
+        this.lastSentMessage[author] = {
+          index: this.messages.length - 1,
+          time: Date.now()
+        };
       }
 
       setTimeout(this.scrollToBottom.bind(this), 100);
