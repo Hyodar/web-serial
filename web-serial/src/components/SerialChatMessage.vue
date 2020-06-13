@@ -22,7 +22,7 @@
     :id="`msg-${id}`"
     style="font-family: monospace;"
   >
-    <span :class="[colors[author]]"> >> </span>
+    <span :class="[colors[author]]" style="border-radius: 5px;">>></span>
     {{ id }} - {{ time }} - {{ computedContent }}
     <br />
   </span>
