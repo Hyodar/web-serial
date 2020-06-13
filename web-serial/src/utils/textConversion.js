@@ -9,7 +9,7 @@ const asciiPrintableRegex = /^[ -~]+$/;
 
 function putSquareOnNonPrintables(text) {
     return Array.from(text).map(el => {
-        return (asciiPrintableRegex.test(el))? el : "\u{25a1}"
+        return (asciiPrintableRegex.test(el))? el : "\u{25a1}";
     }).join("");
 }
 

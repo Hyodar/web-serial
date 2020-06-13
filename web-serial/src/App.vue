@@ -81,25 +81,6 @@ export default {
 
     navigationDrawer: {
       active: true,
-      menus: [
-        {
-          name: "Log Mode",
-          optionName: "logMode",
-          options: [
-            { name: "TERMINAL", val: LogMode.TERMINAL },
-            { name: "CHAT", val: LogMode.CHAT }
-          ],
-        },
-        {
-          name: "Display Mode",
-          optionName: "displayMode",
-          options: [
-            { name: "LITERAL", val: DisplayMode.LITERAL },
-            { name: "HEX", val: DisplayMode.HEX },
-            { name: "BINARY", val: DisplayMode.BINARY }
-          ]
-        }
-      ],
       optionData: {
         logMode: LogMode.CHAT,
         displayMode: DisplayMode.LITERAL
