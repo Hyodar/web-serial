@@ -1,5 +1,5 @@
 <template>
-  <v-container style="background-color: #363636; height: 80%;">
+  <v-container style="background-color: #363636; height: calc(100% - 150px);" id="chatContainer">
     <!--
     <DynamicScroller
       ref="scroller"
@@ -194,10 +194,10 @@ export default {
   mounted() {
     const scrollerToFixedHeight = () => {
       const scroller = document.querySelector(".scroller");
-      const vContent = document.querySelector(".v-main");
-      const vContentHeight = getComputedStyle(vContent).height;
+      const chatContainer = document.querySelector("#chatContainer");
+      const chatContainerHeight = getComputedStyle(chatContainer).height;
 
-      scroller.style.height = `${parseFloat(vContentHeight, 10) * 0.8 * 0.85}px`;
+      scroller.style.height = `${parseFloat(chatContainerHeight, 10) * 0.9}px`;
     };
 
     scrollerToFixedHeight();
