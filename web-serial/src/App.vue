@@ -36,7 +36,7 @@
       </v-row>
 
       <v-row class="ma-1" justify="center">
-        <div class="text-button"> Display Mode </div>
+        <div class="text-button"> Log Mode </div>
       </v-row>
 
       <v-divider class="ma-2"></v-divider>
@@ -81,7 +81,7 @@ export default {
 
   mounted() {
     if (!("serial" in navigator)) {
-      this.snackbarSnackbarMessage = SnackbarMessage.Error.NoWebSerial;
+      this.snackbarMessage = SnackbarMessage.Error.NoWebSerial;
     }
   },
 
