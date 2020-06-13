@@ -10,8 +10,8 @@
       <v-row class="ma-3 mb-0" justify="center" align="center">
         <v-col :cols="9">
           <v-autocomplete
-            v-model="optionData.serialConnection.serialOptions.baudRate"
-            :items="menus.serialConnection.baudRate.suggestions"
+            v-model="optionData.serialConnection.serialOptions.baudrate"
+            :items="menus.serialConnection.baudrate.suggestions"
             label="Baud Rate"
           ></v-autocomplete>
         </v-col>
@@ -42,7 +42,7 @@
               <v-col>
                 <v-text-field
                   type="number"
-                  :value="optionData.serialConnection.serialOptions.bufferSize"
+                  :value="optionData.serialConnection.serialOptions.buffersize"
                   label="Buffer Size"
                 ></v-text-field>
               </v-col>
@@ -51,15 +51,15 @@
             <v-row>
               <v-col>
                 <v-select
-                  :items="menus.serialConnection.dataBits.options"
-                  :value="optionData.serialConnection.serialOptions.dataBits"
+                  :items="menus.serialConnection.databits.options"
+                  :value="optionData.serialConnection.serialOptions.databits"
                   label="Data Bits"
                 ></v-select>
               </v-col>
               <v-col>
                 <v-select
-                  :items="menus.serialConnection.stopBits.options"
-                  :value="optionData.serialConnection.serialOptions.stopBits"
+                  :items="menus.serialConnection.stopbits.options"
+                  :value="optionData.serialConnection.serialOptions.stopbits"
                   label="Stop Bits"
                 ></v-select>
               </v-col>
@@ -130,17 +130,17 @@ export default {
     drawer: true,
     menus: {
       serialConnection: {
-        baudRate: {
+        baudrate: {
           suggestions: [
             115200, 57600, 38400, 19200, 9600, 4800,
             2400, 1800, 1200, 600, 300, 200, 150,
             134, 110, 75, 50
           ]
         },
-        dataBits: {
+        databits: {
           options: [8, 7, 6, 5]
         },
-        stopBits: {
+        stopbits: {
           options: [1, 2]
         },
         parityType: {
@@ -227,7 +227,7 @@ export default {
       this.optionData.serialConnection.serialOptions.port = port;
 
       try {
-        await port.open({ baudRate: parseInt(this.optionData.serialConnection.serialOptions.baudRate) });
+        await port.open({ baudrate: parseInt(this.optionData.serialConnection.serialOptions.baudrate) });
       }
       catch (e) {
         this.$emit("snackbar", SnackbarMessage.Error.Custom(`Serial port opening error: ${e}`));

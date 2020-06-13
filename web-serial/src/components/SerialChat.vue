@@ -104,7 +104,7 @@ import SerialChatMessage from "./SerialChatMessage";
 export default {
   name: "SerialChat",
 
-  props: ["logMode", "displayMode", "messageBufferSize"],
+  props: ["logMode", "displayMode", "messagebuffersize"],
 
   components: {
     SerialChatMessage
@@ -162,7 +162,7 @@ export default {
         author: author
       });
 
-      while (this.messages.length > this.messageBufferSize) {
+      while (this.messages.length > this.messagebuffersize) {
         this.messages.shift();
       }
 
