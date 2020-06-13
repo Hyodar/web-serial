@@ -23,12 +23,11 @@
 
       <v-spacer></v-spacer>
 
-      <v-app-bar-nav-icon
-        v-on:click.stop="navigationDrawer.active = !navigationDrawer.active"
-      ></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon v-on:click.stop="toggleDrawer"></v-app-bar-nav-icon>
     </v-app-bar>
 
     <NavigationDrawer
+      ref="drawer"
       :active="navigationDrawer.active"
       :menus="navigationDrawer.menus"
       :optionData="navigationDrawer.optionData"
@@ -57,7 +56,6 @@ import Snackbar from "./components/Snackbar";
 import SnackbarMessage from "./classes/SnackbarMessage";
 import DisplayMode from "./classes/DisplayMode";
 import LogMode from "./classes/LogMode";
-
 
 export default {
   name: "App",
@@ -100,8 +98,7 @@ export default {
           }
         }
       }
-    },
-
+    }
   }),
 
   methods: {
@@ -111,6 +108,10 @@ export default {
 
     setSnackbarMessage(snackbarMessage) {
       this.snackbarMessage = snackbarMessage;
+    },
+
+    toggleDrawer() {
+      this.$refs.drawer.toggle();
     }
   }
 };
