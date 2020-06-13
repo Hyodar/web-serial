@@ -43,7 +43,9 @@ const colors = Object.freeze({
 import DisplayMode from "../classes/DisplayMode";
 import LogMode from "../classes/LogMode";
 
-import { textToHex, textToBinary } from "../utils/textConversion";
+import { putSquareOnNonPrintables } from "../utils/textConversion";
+import { textToHex } from "../utils/textConversion";
+import { textToBinary } from "../utils/textConversion";
 
 export default {
   name: "SerialChatMessage",
@@ -58,7 +60,7 @@ export default {
   computed: {
     computedContent: function() {
       if (this.displayMode === DisplayMode.LITERAL) {
-        return this.content;
+        return putSquareOnNonPrintables(this.content);
       }
       else if (this.displayMode === DisplayMode.HEX) {
         return textToHex(this.content);
