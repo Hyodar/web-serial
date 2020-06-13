@@ -10,7 +10,7 @@
   >
     <div>
       <v-card-subtitle class="ma-0 pa-2 pb-0 offwhite-text">
-        {{ id }} - {{ time }}
+        {{ time }}
       </v-card-subtitle>
     </div>
     <v-card-text class="pa-0 pd-1 pl-2 mt-0 offwhite-text">
@@ -23,7 +23,7 @@
     style="font-family: monospace;"
   >
     <span :class="[colors[author]]" style="border-radius: 5px;">>></span>
-    {{ id }} - {{ time }} - {{ computedContent }}
+    {{ time }} - {{ computedContent }}
     <br />
   </span>
 </template>
