@@ -25,12 +25,12 @@
         </v-col>
       </v-row>
 
-      <v-expansion-panels tile flat>
+      <v-expansion-panels flat>
         <v-expansion-panel class="transparent">
           <v-expansion-panel-header>
             <span class="text-button" style="font-size: 0.75rem !important;"> Additional Options </span>
           </v-expansion-panel-header>
-          <v-expansion-panel-content>
+          <v-expansion-panel-content class="grey darken-3">
             <v-row>
               <v-col>
                 <v-select
