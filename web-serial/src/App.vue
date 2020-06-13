@@ -24,7 +24,7 @@
       <v-spacer></v-spacer>
 
       <v-app-bar-nav-icon
-        v-on:click.stop="drawer = !drawer"
+        v-on:click.stop="navigationDrawer.active = !navigationDrawer.active"
       ></v-app-bar-nav-icon>
     </v-app-bar>
 
@@ -32,6 +32,7 @@
       :active="navigationDrawer.active"
       :menus="navigationDrawer.menus"
       :optionData="navigationDrawer.optionData"
+      v-on:snackbar="setSnackbarMessage"
     />
 
     <v-main>
@@ -75,7 +76,6 @@ export default {
   },
 
   data: () => ({
-    drawer: true,
     snackbarMessage: null,
     showAsTerminal: false,
 
@@ -83,7 +83,22 @@ export default {
       active: true,
       optionData: {
         logMode: LogMode.CHAT,
-        displayMode: DisplayMode.LITERAL
+        displayMode: DisplayMode.LITERAL,
+        serialConnection: {
+          active: false,
+          port: null,
+          serialOptions: {
+            baudRate: null,
+            dataBits: 8,
+            stopBits: 1,
+            parity: "none",
+            bufferSize: 255,
+            rtscts: false,
+            xon: false,
+            xoff: false,
+            xany: false
+          }
+        }
       }
     },
 
@@ -92,6 +107,10 @@ export default {
   methods: {
     sendMessage(messageContent) {
       this.$refs.chat.addEntry(messageContent, "self");
+    },
+
+    setSnackbarMessage(snackbarMessage) {
+      this.snackbarMessage = snackbarMessage;
     }
   }
 };
