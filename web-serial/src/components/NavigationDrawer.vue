@@ -106,6 +106,40 @@
         v-on:changedValue="optionData.displayMode = $event"  
       />
     </v-container>
+
+    <v-container>
+      <v-row class="ma-1" justify="center">
+        <v-spacer></v-spacer>
+        <div class="text-button"> Expressions </div>
+        <v-spacer></v-spacer>
+        <v-btn icon v-on:click="addNewExpression" small>
+          <v-icon> mdi-plus </v-icon>
+        </v-btn>
+      </v-row>
+
+      <ExpressionEditor ref="expressionEditor" />
+
+      <v-divider class="ma-2"></v-divider>
+
+      <v-card class="grey darken-3" style="height: 300px" v-bar>
+        <v-list>
+          <v-list-item-group>
+            <v-list-item
+              v-for="(item, idx) in menus.expressions.options"
+              :key="idx"
+            >
+              <v-list-item-action>
+                <v-checkbox color="grey darken-4" :input-value="item.active">
+                </v-checkbox>
+              </v-list-item-action>
+              <v-list-item-content v-on:click="openExpressionEditor(item)">
+                <v-list-item-title v-text="item.name"></v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-item-group>
+        </v-list>
+      </v-card>
+    </v-container>
   </v-navigation-drawer>
 </template>
 
@@ -116,6 +150,7 @@ import SerialConnectionFlags from "../classes/SerialConnectionFlags";
 import SnackbarMessage from "../classes/SnackbarMessage";
 
 import HorizontalSelection from "./HorizontalSelection";
+import ExpressionEditor from "./ExpressionEditor";
 
 export default {
   name: "NavigationDrawer",
@@ -123,7 +158,8 @@ export default {
   props: ["active", "optionData"],
 
   components: {
-    HorizontalSelection
+    HorizontalSelection,
+    ExpressionEditor
   },
 
   data: () => ({
@@ -169,6 +205,11 @@ export default {
           { name: "HEX", val: DisplayMode.HEX },
           { name: "BINARY", val: DisplayMode.BINARY }
         ]
+      },
+      expressions: {
+        count: 0,
+        editing: false,
+        options: []
       }
     }
   }),
@@ -236,12 +277,12 @@ export default {
       }
     },
 
-    closeSerialConnection: function() {
+    closeSerialConnection() {
       this.optionData.serialConnection.active = false;
       this.menus.serialConnection.loading = false;
     },
 
-    setSerialConnectionFlags: function(flagList) {
+    setSerialConnectionFlags(flagList) {
       Object.values(SerialConnectionFlags).forEach(flag => {
         this.optionData.serialConnection.serialOptions[flag] = false;
       });
@@ -251,8 +292,20 @@ export default {
       });
     },
 
-    toggle: function() {
+    toggle() {
       this.drawer = !this.drawer;
+    },
+
+    addNewExpression() {
+      this.menus.expressions.options.push({
+        name: `Expression ${this.menus.expressions.count++}`,
+        active: false,
+        expression: ""
+      });
+    },
+
+    openExpressionEditor(expression) {
+      this.$refs.expressionEditor.openDialog(expression);
     }
   }
 }
