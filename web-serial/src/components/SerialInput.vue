@@ -7,6 +7,7 @@
         hide-details
         autocomplete="off"
         height="130px"
+        class="pl-2"
         @keyup.enter.exact="sendMessage"
       ></v-textarea>
       <v-btn icon v-on:click="sendMessage" color="primary" x-large>
