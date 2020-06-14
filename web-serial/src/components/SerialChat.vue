@@ -92,8 +92,8 @@ export default {
     scrollPosition: 0,
     lastScrollMessageIndex: 0,
     lastSentMessage: {
-      "self": { index: 0, time: 0 },
-      "serial": { index: 0, time: 0 }
+      "self": { index: 0, id: 0, time: 0 },
+      "serial": { index: 0, id: 0, time: 0 }
     }
   }),
 
@@ -135,11 +135,12 @@ export default {
   methods: {
     addEntry(msg, author) {
       const elapsedTime = Date.now() - this.lastSentMessage[author].time;
+      const lastMessage = this.lastSentMessage[author];
 
       if (elapsedTime < 500) {
-        // same message
-        this.messages[this.lastSentMessage[author].index].content += msg;
-        this.lastSentMessage[author].time = Date.now();
+        const index = this.messageIndexSearch(lastMessage.id, lastMessage.index);
+        this.messages[index].content += msg;
+        lastMessage.time = Date.now();
       }
       else {
         this.messages.push({
@@ -154,6 +155,7 @@ export default {
         }
 
         this.lastSentMessage[author] = {
+          id: this.msgIdCount - 1,
           index: this.messages.length - 1,
           time: Date.now()
         };
@@ -181,6 +183,14 @@ export default {
           scrollbarTarget.scrollTop = document.getElementById(scrollTo).offsetTop;
         }
       }, 100);
+    },
+
+    messageIndexSearch(id, from) {
+      for (let i = from; i >= 0; i--) {
+        if (this.messages[i].id === id) {
+          return i;
+        }
+      }
     }
   },
 
