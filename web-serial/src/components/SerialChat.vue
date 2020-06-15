@@ -12,6 +12,7 @@
             :author="item.author"
             :logMode="logMode"
             :displayMode="displayMode"
+            :expressions="activeExpressions"
           />
         </v-slide-x-transition>
       </div>
@@ -79,7 +80,7 @@ import SerialChatMessage from "./SerialChatMessage";
 export default {
   name: "SerialChat",
 
-  props: ["logMode", "displayMode", "messageBufferSize"],
+  props: ["logMode", "displayMode", "messageBufferSize", "expressions"],
 
   components: {
     SerialChatMessage
@@ -96,6 +97,12 @@ export default {
       "serial": { index: 0, id: 0, time: 0 }
     }
   }),
+
+  computed: {
+    activeExpressions: function() {
+      return this.expressions.filter(el => el.active);
+    }
+  },
 
   watch: {
     scrollPosition: function(scrollPos) {
@@ -137,7 +144,7 @@ export default {
       const elapsedTime = Date.now() - this.lastSentMessage[author].time;
       const lastMessage = this.lastSentMessage[author];
 
-      if (elapsedTime < 500) {
+      if (elapsedTime < 0) {
         const index = this.messageIndexSearch(lastMessage.id, lastMessage.index);
         this.messages[index].content += msg;
         lastMessage.time = Date.now();

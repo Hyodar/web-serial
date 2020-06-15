@@ -125,16 +125,28 @@
         <v-list>
           <v-list-item-group>
             <v-list-item
-              v-for="(item, idx) in menus.expressions.options"
+              v-for="(item, idx) in optionData.expressions"
               :key="idx"
             >
               <v-list-item-action>
-                <v-checkbox color="grey darken-4" :input-value="item.active">
+                <v-checkbox color="grey darken-4" v-model="item.active">
                 </v-checkbox>
               </v-list-item-action>
-              <v-list-item-content v-on:click="openExpressionEditor(item)">
+              <v-list-item-content v-on:click="openExpressionEditor(item);">
                 <v-list-item-title v-text="item.name"></v-list-item-title>
               </v-list-item-content>
+              <v-list-item-action>
+                <v-menu v-model="item.colorEdit" top nudge-bottom="105" nudge-left="16" :close-on-content-click="false">
+                  <template v-slot:activator="{ on }">
+                    <v-btn fab :color="item.color" v-on="on" x-small></v-btn>
+                  </template>
+                  <v-card>
+                    <v-card-text class="pa-0">
+                      <v-color-picker v-model="item.color" flat />
+                    </v-card-text>
+                  </v-card>
+                </v-menu>
+              </v-list-item-action>
             </v-list-item>
           </v-list-item-group>
         </v-list>
@@ -208,8 +220,7 @@ export default {
       },
       expressions: {
         count: 0,
-        editing: false,
-        options: []
+        editing: false
       }
     }
   }),
@@ -218,7 +229,6 @@ export default {
     this.drawer = this.active;
 
     if ("serial" in navigator) {
-
       navigator.serial.onconnect = () => {
         this.optionData.serialConnection.active = true;
         this.menus.serialConnection.loading = false;
@@ -297,10 +307,12 @@ export default {
     },
 
     addNewExpression() {
-      this.menus.expressions.options.push({
+      this.optionData.expressions.push({
         name: `Expression ${this.menus.expressions.count++}`,
         active: false,
-        expression: ""
+        expression: new RegExp("a^", "gm"),
+        color: "#ffffff",
+        colorEdit: false
       });
     },
 

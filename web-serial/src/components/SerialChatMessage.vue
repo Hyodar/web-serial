@@ -17,9 +17,10 @@
           {{ time }}
         </v-card-subtitle>
       </div>
-      <v-card-text class="pa-0 pd-1 pl-2 mt-0 offwhite-text">
-        {{ printableContent }}
-      </v-card-text>
+      <v-card-text
+        class="pa-0 pd-1 pl-2 mt-0 offwhite-text"
+        v-html="regexMarkedContent"
+      ></v-card-text>
     </v-card>
     <span
       v-else-if="logMode === LogMode.TERMINAL"
@@ -27,7 +28,7 @@
       style="font-family: monospace;"
     >
       <span :class="[colors[author]]" style="border-radius: 5px;">>></span>
-      {{ time }} - {{ printableContent }}
+      {{ time }} - <span v-html="regexMarkedContent"></span>
       <br />
     </span>
   </div>
@@ -53,14 +54,15 @@ const colors = Object.freeze({
 import DisplayMode from "../classes/DisplayMode";
 import LogMode from "../classes/LogMode";
 
-import { putSquareOnNonPrintables } from "../utils/textConversion";
-import { textToHex } from "../utils/textConversion";
-import { textToBinary } from "../utils/textConversion";
+import { charOrSquare } from "../utils/textConversion";
+import { charToHex } from "../utils/textConversion";
+import { charToBinary } from "../utils/textConversion";
+import { applyMultipleRegexes } from "../utils/textRegex";
 
 export default {
   name: "SerialChatMessage",
 
-  props: ["id", "content", "time", "author", "logMode", "displayMode"],
+  props: ["id", "content", "time", "author", "logMode", "displayMode", "expressions"],
 
   data: () => ({
     colors: colors,
@@ -69,23 +71,44 @@ export default {
   }),
 
   computed: {
-    computedContent: function() {
-      if (this.displayMode === DisplayMode.LITERAL) {
-        return this.content;
+    regexMarkedContent: function() {
+      const matchingExpressions = applyMultipleRegexes(
+        this.content,
+        this.expressions
+      );
+
+      let newStr = "";
+      let endIndex;
+      let matchingExpression;
+
+      for (let i = 0; i < this.content.length; i++) {
+        matchingExpression = matchingExpressions.filter((el) => el.match.index === i)[0];
+
+        if (matchingExpression) {
+          newStr += `<span style='background-color: ${matchingExpression.color};'>`;
+          endIndex = i + matchingExpression.match[0].length;
+        }
+        else if (i === endIndex) {
+          newStr += "</span>";
+          endIndex = null;
+        }
+
+        newStr += this.displayFunction(this.content[i]);
       }
-      else if (this.displayMode === DisplayMode.HEX) {
-        return textToHex(this.content);
-      }
-      else {
-        return textToBinary(this.content);
-      }
+
+      return newStr;
     },
 
-    printableContent: function() {
+    displayFunction: function() {
       if (this.displayMode === DisplayMode.LITERAL) {
-        return putSquareOnNonPrintables(this.computedContent);
+        return charOrSquare;
       }
-      return this.computedContent;
+      else if (this.displayMode === DisplayMode.HEX) {
+        return charToHex;
+      }
+      else {
+        return charToBinary;
+      }
     }
   },
 

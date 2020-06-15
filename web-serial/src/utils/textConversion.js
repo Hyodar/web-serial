@@ -1,19 +1,12 @@
 
-function textToBase(text, base, minLength=0) {
-    return Array.from(text).map(el => {
-        return ` ${el.charCodeAt(0).toString(base).padStart(minLength, "0")} `;
-    }).join("");
+function charToBase(chr, base, minLength=0) {
+    return ` ${chr.charCodeAt(0).toString(base).padStart(minLength, "0")} `;
 }
 
 const asciiPrintableRegex = /^[ -~]+$/;
 
-function putSquareOnNonPrintables(text) {
-    return Array.from(text).map(el => {
-        return (asciiPrintableRegex.test(el))? el : "\u{25a1}";
-    }).join("");
-}
+const charOrSquare = chr => chr.match(asciiPrintableRegex)? chr : '\u{25a1}';
+const charToHex = chr => charToBase(chr, 16, 2);
+const charToBinary = chr => charToBase(chr, 2, 8);
 
-const textToHex = text => textToBase(text, 16, 2);
-const textToBinary = text => textToBase(text, 2, 8);
-
-export { putSquareOnNonPrintables, textToHex, textToBinary };
+export { charOrSquare, charToHex, charToBinary };
