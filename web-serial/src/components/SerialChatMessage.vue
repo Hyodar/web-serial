@@ -100,7 +100,7 @@ export default {
     },
 
     displayFunction: function() {
-      if (this.displayMode === DisplayMode.LITERAL) {
+      if (this.displayMode === DisplayMode.ASCII) {
         return charOrSquare;
       }
       else if (this.displayMode === DisplayMode.HEX) {

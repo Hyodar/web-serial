@@ -213,7 +213,7 @@ export default {
       },
       displayMode: {
         options: [
-          { name: "LITERAL", val: DisplayMode.LITERAL },
+          { name: "ASCII", val: DisplayMode.ASCII },
           { name: "HEX", val: DisplayMode.HEX },
           { name: "BINARY", val: DisplayMode.BINARY }
         ]

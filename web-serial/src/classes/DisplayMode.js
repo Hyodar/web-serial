@@ -1,5 +1,5 @@
 const DisplayMode = Object.freeze({
-    LITERAL: 0,
+    ASCII: 0,
     HEX: 1,
     BINARY: 2
 });

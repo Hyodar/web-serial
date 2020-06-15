@@ -41,6 +41,7 @@
         :logMode="navigationDrawer.optionData.logMode"
         :displayMode="navigationDrawer.optionData.displayMode"
         :messageBufferSize="500"
+        :expressions="navigationDrawer.optionData.expressions"
       />
       <SerialInput v-on:sendMessage="sendMessage" />
     </v-main>
@@ -81,7 +82,7 @@ export default {
       active: true,
       optionData: {
         logMode: LogMode.CHAT,
-        displayMode: DisplayMode.LITERAL,
+        displayMode: DisplayMode.ASCII,
         serialConnection: {
           active: false,
           port: null,
@@ -96,7 +97,8 @@ export default {
             xoff: false,
             xany: false
           }
-        }
+        },
+        expressions: []
       }
     }
   }),
