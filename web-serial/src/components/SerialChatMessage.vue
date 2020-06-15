@@ -51,18 +51,14 @@ const colors = Object.freeze({
   serial: "secondary"
 });
 
-import DisplayMode from "../classes/DisplayMode";
 import LogMode from "../classes/LogMode";
 
-import { charOrSquare } from "../utils/textConversion";
-import { charToHex } from "../utils/textConversion";
-import { charToBinary } from "../utils/textConversion";
-import { applyMultipleRegexes } from "../utils/textRegex";
+import UnionReplacer from "union-replacer";
 
 export default {
   name: "SerialChatMessage",
 
-  props: ["id", "content", "time", "author", "logMode", "displayMode", "expressions"],
+  props: ["id", "content", "time", "author", "logMode", "expressions"],
 
   data: () => ({
     colors: colors,
@@ -72,43 +68,7 @@ export default {
 
   computed: {
     regexMarkedContent: function() {
-      const matchingExpressions = applyMultipleRegexes(
-        this.content,
-        this.expressions
-      );
-
-      let newStr = "";
-      let endIndex;
-      let matchingExpression;
-
-      for (let i = 0; i < this.content.length; i++) {
-        matchingExpression = matchingExpressions.filter((el) => el.match.index === i)[0];
-
-        if (matchingExpression) {
-          newStr += `<span style='background-color: ${matchingExpression.color};'>`;
-          endIndex = i + matchingExpression.match[0].length;
-        }
-        else if (i === endIndex) {
-          newStr += "</span>";
-          endIndex = null;
-        }
-
-        newStr += this.displayFunction(this.content[i]);
-      }
-
-      return newStr;
-    },
-
-    displayFunction: function() {
-      if (this.displayMode === DisplayMode.ASCII) {
-        return charOrSquare;
-      }
-      else if (this.displayMode === DisplayMode.HEX) {
-        return charToHex;
-      }
-      else {
-        return charToBinary;
-      }
+      return new UnionReplacer(this.expressions).replace(this.content);
     }
   },
 

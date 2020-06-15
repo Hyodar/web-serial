@@ -62,7 +62,7 @@ export default {
         this.expression.expression = new RegExp(this.expressionField.slice(1, - (1 + flags.length)), flags);
       }
       else {
-        this.expression.expression = new RegExp(this.expressionField, "gm");
+        this.expression.expression = new RegExp(this.expressionField, "g");
       }
 
       this.dialog = false;

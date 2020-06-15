@@ -9,4 +9,8 @@ const charOrSquare = chr => chr.match(asciiPrintableRegex)? chr : '\u{25a1}';
 const charToHex = chr => charToBase(chr, 16, 2);
 const charToBinary = chr => charToBase(chr, 2, 8);
 
-export { charOrSquare, charToHex, charToBinary };
+function strToBase(str, baseConversionFunction) {
+    return Array.from(str).map(baseConversionFunction).join("");
+}
+
+export { charOrSquare, charToHex, charToBinary, strToBase };

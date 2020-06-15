@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "union-replacer": "^2.0.0",
     "vue": "^2.6.11",
     "vue-virtual-scroller": "^1.0.10",
     "vuebar": "0.0.20",

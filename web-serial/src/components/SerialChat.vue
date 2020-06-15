@@ -1,21 +1,34 @@
 <template>
   <v-container style="background-color: #363636; height: calc(100% - 150px);" id="chatContainer">
     <v-card outlined style="background-color: transparent">
-      <div ref="scrollbar" class="scroller" v-bar>
-        <v-slide-x-transition class="py-0" group>
+      <DynamicScroller
+        ref="scroller"
+        :items="messages"
+        :min-item-size="24"
+        class="scroller"
+        :emitUpdate="true"
+        @resize="scrollToBottom"
+        v-on:update="scrollerUpdate"
+      >
+        <DynamicScrollerItem
+          slot-scope="{ item, index, active }"
+          :item="item"
+          :active="active"
+          :data-index="index"
+          :size-dependencies="[
+            item.content,
+          ]"
+        >
           <SerialChatMessage
-            v-for="(item, idx) in messages"
-            v-bind:key="idx"
             :id="item.id"
             :time="item.time"
             :content="item.content"
             :author="item.author"
             :logMode="logMode"
-            :displayMode="displayMode"
             :expressions="activeExpressions"
           />
-        </v-slide-x-transition>
-      </div>
+        </DynamicScrollerItem>
+      </DynamicScroller>
     </v-card>
   </v-container>
 </template>
@@ -77,6 +90,13 @@
 <script>
 import SerialChatMessage from "./SerialChatMessage";
 
+import DisplayMode from "../classes/DisplayMode";
+
+import { charOrSquare } from "../utils/textConversion";
+import { charToHex } from "../utils/textConversion";
+import { charToBinary } from "../utils/textConversion";
+import { strToBase } from "../utils/textConversion";
+
 export default {
   name: "SerialChat",
 
@@ -90,7 +110,7 @@ export default {
     messages: [],
     msgIdCount: 0,
     lastScrollPosition: 0,
-    scrollPosition: 0,
+    // scrollPosition: 0,
     lastScrollMessageIndex: 0,
     lastSentMessage: {
       "self": { index: 0, id: 0, time: 0 },
@@ -100,36 +120,31 @@ export default {
 
   computed: {
     activeExpressions: function() {
-      return this.expressions.filter(el => el.active);
+      const unionReplacerExpressions = this.expressions
+      .filter(el => el.active)
+      .map(el => {
+        return [el.expression, match => `<span style="background-color: ${el.color}">${strToBase(match, this.displayFunction)}</span>`]
+      });
+
+      unionReplacerExpressions.push([/[\s\S]*/, match => strToBase(match, this.displayFunction)]);
+
+      return unionReplacerExpressions;
+    },
+    
+    displayFunction: function() {
+      if (this.displayMode === DisplayMode.ASCII) {
+        return charOrSquare;
+      }
+      else if (this.displayMode === DisplayMode.HEX) {
+        return charToHex;
+      }
+      else {
+        return charToBinary;
+      }
     }
   },
 
   watch: {
-    scrollPosition: function(scrollPos) {
-      let msg = null;
-
-      if (scrollPos > this.lastScrollPosition) {
-        for (let i = this.lastScrollMessageIndex; i < this.messages.length; i++) {
-          msg = document.getElementById(`msg-${this.messages[i].id}`);
-          if (msg.offsetTop >= scrollPos) {
-            this.lastScrollMessageIndex = i;
-            break;
-          }
-        }
-      }
-      else {
-        for (let i = this.lastScrollMessageIndex; i >= 0; i--) {
-          msg = document.getElementById(`msg-${this.messages[i].id}`);
-          if (msg.offsetTop <= scrollPos) {
-            this.lastScrollMessageIndex = i;
-            break;
-          }
-        }
-      }
-
-      this.lastScrollPosition = scrollPos;
-    },
-
     logMode: function() {
       this.scrollToCurrentMessage();
     },
@@ -144,7 +159,7 @@ export default {
       const elapsedTime = Date.now() - this.lastSentMessage[author].time;
       const lastMessage = this.lastSentMessage[author];
 
-      if (elapsedTime < 0) {
+      if (elapsedTime < 500) {
         const index = this.messageIndexSearch(lastMessage.id, lastMessage.index);
         this.messages[index].content += msg;
         lastMessage.time = Date.now();
@@ -172,8 +187,7 @@ export default {
     },
 
     scrollToBottom() {
-      const scroller = this.$refs.scrollbar._vuebarState.el2;
-      scroller.scrollTop = scroller.scrollHeight;
+      this.$refs.scroller.scrollToItem(this.messages.length - 1);
     },
 
     getCurrentTime() {
@@ -183,13 +197,7 @@ export default {
     },
 
     scrollToCurrentMessage() {
-      setTimeout(() => {
-        if(this.msgIdCount) {
-          const scrollbarTarget = this.$refs.scrollbar._vuebarState.el2;
-          const scrollTo = `msg-${this.messages[this.lastScrollMessageIndex].id}`;
-          scrollbarTarget.scrollTop = document.getElementById(scrollTo).offsetTop;
-        }
-      }, 100);
+      this.$refs.scroller.scrollToItem(this.lastScrollMessageIndex);
     },
 
     messageIndexSearch(id, from) {
@@ -198,6 +206,10 @@ export default {
           return i;
         }
       }
+    },
+
+    scrollerUpdate(startIdx) {
+      this.lastScrollMessageIndex = startIdx;
     }
   },
 
@@ -212,13 +224,6 @@ export default {
 
     scrollerToFixedHeight();
     window.addEventListener("resize", scrollerToFixedHeight);
-
-    const scrollbarTarget = this.$refs.scrollbar._vuebarState.el2;
-
-    this.lastScrollPosition = scrollbarTarget.scrollHeight;
-    scrollbarTarget.addEventListener("scroll", event => {
-      this.scrollPosition = event.target.scrollTop;
-    });
   }
 };
 </script>
