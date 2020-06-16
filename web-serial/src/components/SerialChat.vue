@@ -110,7 +110,6 @@ export default {
     messages: [],
     msgIdCount: 0,
     lastScrollPosition: 0,
-    // scrollPosition: 0,
     lastScrollMessageIndex: 0,
     lastSentMessage: {
       "self": { index: 0, id: 0, time: 0 },
@@ -123,10 +122,13 @@ export default {
       const unionReplacerExpressions = this.expressions
       .filter(el => el.active)
       .map(el => {
-        return [el.expression, match => `<span style="background-color: ${el.color}">${strToBase(match, this.displayFunction)}</span>`]
+        return [
+          el.expression,
+          match => `<span style="background-color: ${el.color}">${strToBase(match, this.displayFunction)}</span>`
+        ]
       });
 
-      unionReplacerExpressions.push([/[\s\S]*/, match => strToBase(match, this.displayFunction)]);
+      unionReplacerExpressions.push([/[\s\S]/gm, match => strToBase(match, this.displayFunction)]);
 
       return unionReplacerExpressions;
     },
@@ -187,7 +189,7 @@ export default {
     },
 
     scrollToBottom() {
-      this.$refs.scroller.scrollToItem(this.messages.length - 1);
+      this.$refs.scroller.scrollToBottom();
     },
 
     getCurrentTime() {
@@ -208,8 +210,8 @@ export default {
       }
     },
 
-    scrollerUpdate(startIdx) {
-      this.lastScrollMessageIndex = startIdx;
+    scrollerUpdate(startIdx, endIdx) {
+      this.lastScrollMessageIndex = endIdx;
     }
   },
 
