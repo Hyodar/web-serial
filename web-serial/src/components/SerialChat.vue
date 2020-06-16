@@ -26,6 +26,7 @@
             :author="item.author"
             :logMode="logMode"
             :expressions="activeExpressions"
+            :displayFunction="displayFunction"
           />
         </DynamicScrollerItem>
       </DynamicScroller>

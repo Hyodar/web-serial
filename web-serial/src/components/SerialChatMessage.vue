@@ -1,6 +1,6 @@
 <template>
-  <div v-on:mouseover="showButton = true;" v-on:mouseleave="showButton = false;">
-    <v-btn v-show="showButton" fab class="message-button" small v-on:click="copyContent">
+  <div v-on:mouseover="showButton = true;" v-on:mouseleave="showButton = false;" class="monitor-entry">
+    <v-btn v-show="showButton" icon class="message-button" x-small v-on:click="copyContent">
       <v-icon small> mdi-content-copy </v-icon>
     </v-btn>
     <v-card
@@ -40,12 +40,21 @@
 }
 
 .message-button {
-  float: inline-end;
+  position: absolute;
+  right: 0px;
   z-index: 1;
+}
+
+.monitor-entry:hover {
+  background-color: rgba(255, 255, 255, 0.06);
 }
 </style>
 
 <script>
+
+import { strToBase } from "../utils/textConversion";
+import { charOrSquare } from "../utils/textConversion";
+
 const colors = Object.freeze({
   self: "primary",
   serial: "secondary"
@@ -58,7 +67,7 @@ import UnionReplacer from "union-replacer";
 export default {
   name: "SerialChatMessage",
 
-  props: ["id", "content", "time", "author", "logMode", "expressions"],
+  props: ["id", "content", "time", "author", "logMode", "expressions", "displayFunction"],
 
   data: () => ({
     colors: colors,
@@ -68,7 +77,14 @@ export default {
 
   computed: {
     regexMarkedContent: function() {
-      return new UnionReplacer(this.expressions).replace(this.content);
+      return new UnionReplacer(this.expressions, "gm").replace(this.content);
+    },
+
+    rawContent: function() {
+      if (this.displayFunction === charOrSquare) {
+        return this.content;
+      }
+      return strToBase(this.content, this.displayFunction);
     }
   },
 
@@ -77,7 +93,7 @@ export default {
       const temp = document.createElement("textarea");
 
       document.getElementById(`msg-${this.id}`).appendChild(temp);
-      temp.value = this.computedContent;
+      temp.value = this.rawContent;
 
       temp.select();
       temp.setSelectionRange(0, 99999);
