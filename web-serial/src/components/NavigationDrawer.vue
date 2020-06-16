@@ -138,7 +138,11 @@
               <v-list-item-action>
                 <v-menu v-model="item.colorEdit" top nudge-bottom="105" nudge-left="16" :close-on-content-click="false">
                   <template v-slot:activator="{ on }">
-                    <v-btn fab :color="item.color" v-on="on" x-small></v-btn>
+                    <v-btn icon :color="item.color" v-on="on" class="pa-3">
+                      <v-icon large>
+                        mdi-label
+                      </v-icon>
+                    </v-btn>
                   </template>
                   <v-card>
                     <v-card-text class="pa-0">
@@ -154,6 +158,12 @@
     </v-container>
   </v-navigation-drawer>
 </template>
+
+<style>
+.v-color-picker__input > input {
+  color: #ffffff;
+}
+</style>
 
 <script>
 import DisplayMode from "../classes/DisplayMode";
@@ -234,6 +244,7 @@ export default {
         this.menus.serialConnection.loading = false;
 
         this.$emit("snackbar", SnackbarMessage.Success.SerialConnectionOpened);
+        this.$emit("serialConnected");
       }
 
       navigator.serial.ondisconnect = () => {
@@ -241,6 +252,7 @@ export default {
         this.menus.serialConnection.loading = false;
 
         this.$emit("snackbar", SnackbarMessage.Warning.SerialConnectionClosed);
+        this.$emit("serialDisconnected");
       }
     }
   },
