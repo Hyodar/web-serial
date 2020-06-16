@@ -20,6 +20,9 @@
 </template>
 
 <script>
+
+import unescapeJs from "unescape-js";
+
 export default {
   name: "SerialInput",
 
@@ -30,7 +33,7 @@ export default {
   methods: {
     sendMessage() {
       if (this.message) {
-        this.$emit("sendMessage", this.message);
+        this.$emit("sendMessage", unescapeJs(this.message));
         this.message = "";
       }
     }
