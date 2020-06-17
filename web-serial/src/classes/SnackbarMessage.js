@@ -2,12 +2,12 @@ const SnackbarMessage = Object.freeze({
   Error: {
     NoWebSerial: {
       color: "error",
-      content: "Your browser doesn't seem to have the WebSerial API enabled.",
+      content: "Your browser doesn't seem to have the WebSerial API enabled. Please check if your browser supports it. The 'enable' button will lead you to the instructions to activate it on Chrome.",
       buttons: [
         {
-          text: "Enable it here!",
+          text: "Enable",
           callback: () => {
-            window.location.href = "https://duckduckgo.com";
+            window.location.href = "https://codelabs.developers.google.com/codelabs/web-serial/#2";
           }
         }
       ],
