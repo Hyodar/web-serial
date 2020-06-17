@@ -1,6 +1,7 @@
 <template>
   <v-app dark style="background-color: #262626;">
     <v-app-bar app>
+      <!--
       <div class="d-flex align-center">
         <v-img
           alt="Vuetify Logo"
@@ -20,6 +21,7 @@
           width="100"
         />
       </div>
+      -->
 
       <v-spacer></v-spacer>
 
