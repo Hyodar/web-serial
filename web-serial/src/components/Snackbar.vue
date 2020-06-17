@@ -1,8 +1,8 @@
 <template>
   <v-snackbar
     top
+    v-model="isOn"
     v-if="isOn"
-    v-model="content"
     :color="content.color"
     :timeout="content.timeout"
   >
@@ -23,11 +23,16 @@
 export default {
   name: "Snackbar",
 
-  props: ["content"],
-
   data: () => ({
-    isOn: false
+    isOn: false,
+    content: null
   }),
+
+  methods: {
+    setMessage(msg) {
+      this.content = msg;
+    }
+  },
 
   watch: {
     content: function() {

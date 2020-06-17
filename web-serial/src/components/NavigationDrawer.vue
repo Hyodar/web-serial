@@ -19,9 +19,10 @@
           <v-btn
             text
             v-on:click="toggleSerialConnection"
-            v-text="(optionData.serialConnection.active)? 'Close' : 'Go!'"
             :loading="menus.serialConnection.loading"
-          ></v-btn>
+          >
+            {{ serialConnectionButtonText }}
+          </v-btn>
         </v-col>
       </v-row>
 
@@ -240,7 +241,6 @@ export default {
 
     if ("serial" in navigator) {
       navigator.serial.onconnect = () => {
-        this.optionData.serialConnection.active = true;
         this.menus.serialConnection.loading = false;
 
         this.$emit("snackbar", SnackbarMessage.Success.SerialConnectionOpened);
@@ -248,7 +248,6 @@ export default {
       }
 
       navigator.serial.ondisconnect = () => {
-        this.optionData.serialConnection.active = false;
         this.menus.serialConnection.loading = false;
 
         this.$emit("snackbar", SnackbarMessage.Warning.SerialConnectionClosed);
@@ -257,11 +256,17 @@ export default {
     }
   },
 
+  computed: {
+    serialConnectionButtonText: function() {
+      return (this.optionData.serialConnection.port)? 'Close' : 'Go!';
+    }
+  },
+
   methods: {
     toggleSerialConnection: async function() {
       this.menus.serialConnection.loading = true;
 
-      if (!this.optionData.serialConnection.active) {
+      if (!this.optionData.serialConnection.port) {
         await this.openSerialConnection();
       }
       else {
@@ -287,21 +292,27 @@ export default {
         return;
       }
 
-      this.optionData.serialConnection.serialOptions.port = port;
+      this.optionData.serialConnection.port = port;
 
       try {
-        await port.open({ baudrate: parseInt(this.optionData.serialConnection.serialOptions.baudrate) });
+        await port.open(this.optionData.serialConnection.serialOptions);
       }
       catch (e) {
         this.$emit("snackbar", SnackbarMessage.Error.Custom(`Serial port opening error: ${e}`));
         this.menus.serialConnection.loading = false;
         return;
       }
+
+      this.menus.serialConnection.loading = false;
+
+      this.$emit("snackbar", SnackbarMessage.Success.SerialConnectionOpened);
+      this.$emit("serialConnected");
     },
 
     closeSerialConnection() {
-      this.optionData.serialConnection.active = false;
       this.menus.serialConnection.loading = false;
+
+      this.$emit("serialDisconnected");
     },
 
     setSerialConnectionFlags(flagList) {
