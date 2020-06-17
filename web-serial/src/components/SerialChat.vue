@@ -1,6 +1,6 @@
 <template>
   <v-container style="background-color: #363636; height: calc(100% - 150px);" id="chatContainer">
-    <v-card outlined style="background-color: transparent">
+    <v-card outlined :style="{'backgroundColor': chatBackgroundColor, 'transition': '0.2s ease-in-out background-color'}">
       <DynamicScroller
         ref="scroller"
         :items="messages"
@@ -92,6 +92,7 @@
 import SerialChatMessage from "./SerialChatMessage";
 
 import DisplayMode from "../classes/DisplayMode";
+import LogMode from "../classes/LogMode";
 
 import { charOrSquare } from "../utils/textConversion";
 import { charToHex } from "../utils/textConversion";
@@ -143,6 +144,15 @@ export default {
       }
       else {
         return charToBinary;
+      }
+    },
+
+    chatBackgroundColor: function() {
+      if (this.logMode === LogMode.CHAT) {
+        return "transparent";
+      }
+      else {
+        return "#000000b0";
       }
     }
   },
