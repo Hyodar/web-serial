@@ -1,3 +1,6 @@
 
 # Editor settings
 .vscode
+
+# Build script
+build.ps1
