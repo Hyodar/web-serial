@@ -115,7 +115,6 @@ export default {
     },
 
     displayMode: function() {
-      this.scrollToCurrentMessage();
       this.$refs.scroller.forceUpdate(true);
     }
   },

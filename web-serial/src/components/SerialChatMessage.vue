@@ -9,7 +9,7 @@
         dense
         :color="colors[author]"
         :elevation="2"
-        style="font-family: monospace;"
+        style="font-family: monospace; min-height: 42px;"
       >
         <div>
           <v-card-subtitle class="ma-0 pa-2 pb-0 offwhite-text">
