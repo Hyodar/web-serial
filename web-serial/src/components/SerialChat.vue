@@ -1,92 +1,43 @@
 <template>
   <v-container style="background-color: #363636; height: calc(100% - 150px);" id="chatContainer">
+    <v-btn v-on:click="clickTestBtn"> asddas </v-btn>
     <v-card outlined :style="{'backgroundColor': chatBackgroundColor, 'transition': '0.2s ease-in-out background-color'}">
       <DynamicScroller
         ref="scroller"
         :items="messages"
         :min-item-size="24"
+        :buffer="300"
         class="scroller"
         :emitUpdate="true"
         @resize="scrollToBottom"
         v-on:update="scrollerUpdate"
       >
-        <DynamicScrollerItem
-          slot-scope="{ item, index, active }"
-          :item="item"
-          :active="active"
-          :data-index="index"
-          :size-dependencies="[
-            item.content,
-          ]"
-        >
-          <SerialChatMessage
-            :id="item.id"
-            :time="item.time"
-            :content="item.content"
-            :author="item.author"
-            :logMode="logMode"
-            :expressions="activeExpressions"
-            :displayFunction="displayFunction"
-          />
-        </DynamicScrollerItem>
+        <template v-slot="{ item, index, active }">
+          <DynamicScrollerItem
+            
+            :item="item"
+            :active="active"
+            :data-active="active"
+            :data-index="index"
+            :size-dependencies="[
+              item.content,
+            ]"
+          >
+            <SerialChatMessage
+              :id="item.id"
+              :time="item.time"
+              :content="item.content"
+              :author="item.author"
+              :logMode="logMode"
+              :expressions="activeExpressions"
+              :displayFunction="displayFunction"
+            />
+          </DynamicScrollerItem>
+        </template>
       </DynamicScroller>
     </v-card>
   </v-container>
 </template>
-
-<style>
-.vb > .vb-dragger {
-  z-index: 5;
-  width: 12px;
-  right: 0;
-}
-
-.vb > .vb-dragger > .vb-dragger-styler {
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  -webkit-transform: rotate3d(0, 0, 0, 0);
-  transform: rotate3d(0, 0, 0, 0);
-  -webkit-transition:
-    background-color 100ms ease-out,
-    margin 100ms ease-out,
-    height 100ms ease-out,
-    top 300ms ease-out;
-  transition:
-    background-color 100ms ease-out,
-    margin 100ms ease-out,
-    height 100ms ease-out,
-    top 300ms ease-out;
-  background-color: rgba(255, 255, 255, 0.1);
-  margin: 5px 5px 5px 0;
-  border-radius: 20px;
-  height: calc(100% - 10px);
-  display: block;
-}
-
-.vb.vb-scrolling-phantom > .vb-dragger > .vb-dragger-styler {
-  background-color: rgba(255, 255, 255, 0.3);
-}
-
-.vb > .vb-dragger:hover > .vb-dragger-styler {
-  background-color: rgba(255, 255, 255, 0.5);
-  margin: 0px;
-  height: 100%;
-}
-
-.vb.vb-dragging > .vb-dragger > .vb-dragger-styler {
-  background-color: rgba(255, 255, 255, 0.5);
-  margin: 0px;
-  height: 100%;
-}
-
-.vb.vb-dragging-phantom > .vb-dragger > .vb-dragger-styler {
-  background-color: rgba(255, 255, 255, 0.5);
-}
-
-.vb-content {
-  scroll-behavior: smooth;
-}
-</style>
 
 <script>
 import SerialChatMessage from "./SerialChatMessage";
@@ -116,7 +67,8 @@ export default {
     lastSentMessage: {
       "self": { index: 0, id: 0, time: 0 },
       "serial": { index: 0, id: 0, time: 0 }
-    }
+    },
+    testing: false,
   }),
 
   computed: {
@@ -160,10 +112,12 @@ export default {
   watch: {
     logMode: function() {
       this.scrollToCurrentMessage();
+      this.$refs.scroller.forceUpdate(true);
     },
 
     displayMode: function() {
       this.scrollToCurrentMessage();
+      this.$refs.scroller.forceUpdate(true);
     }
   },
 
@@ -172,7 +126,7 @@ export default {
       const elapsedTime = Date.now() - this.lastSentMessage[author].time;
       const lastMessage = this.lastSentMessage[author];
 
-      if (elapsedTime < 500) {
+      if (elapsedTime < 0) {
         const index = this.messageIndexSearch(lastMessage.id, lastMessage.index);
         this.messages[index].content += msg;
         lastMessage.time = Date.now();
@@ -196,7 +150,9 @@ export default {
         };
       }
 
-      setTimeout(this.scrollToBottom.bind(this), 100);
+      if (this.lastScrollMessageIndex >= this.messages.length - 5) {
+        setTimeout(this.scrollToBottom.bind(this), 100);
+      }
     },
 
     scrollToBottom() {
@@ -223,6 +179,25 @@ export default {
 
     scrollerUpdate(startIdx, endIdx) {
       this.lastScrollMessageIndex = endIdx;
+    },
+
+    test() {
+      for (let i = 0; i < 10; i++) {
+        this.addEntry("asdasdasd", "self");
+      }
+
+      this.scrollToBottom();
+
+      if (this.testing) {
+        requestAnimationFrame(this.test);
+      }
+    },
+
+    clickTestBtn() {
+      this.testing = !this.testing;
+      if (this.testing) {
+        this.test();
+      }
     }
   },
 

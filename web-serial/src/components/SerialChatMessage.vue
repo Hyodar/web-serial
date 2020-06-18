@@ -3,25 +3,26 @@
     <v-btn v-show="showButton" icon class="message-button" x-small v-on:click="copyContent">
       <v-icon small> mdi-content-copy </v-icon>
     </v-btn>
-    <v-card
-      v-if="logMode === LogMode.CHAT"
-      :id="`msg-${id}`"
-      dense
-      :color="colors[author]"
-      :elevation="2"
-      class="ma-2 mr-4"
-      style="font-family: monospace;"
-    >
-      <div>
-        <v-card-subtitle class="ma-0 pa-2 pb-0 offwhite-text">
-          {{ time }}
-        </v-card-subtitle>
-      </div>
-      <v-card-text
-        class="pa-0 pd-1 pl-2 mt-0 offwhite-text"
-        v-html="regexMarkedContent"
-      ></v-card-text>
-    </v-card>
+    <div v-if="logMode === LogMode.CHAT">
+      <v-card
+        :id="`msg-${id}`"
+        dense
+        :color="colors[author]"
+        :elevation="2"
+        style="font-family: monospace;"
+      >
+        <div>
+          <v-card-subtitle class="ma-0 pa-2 pb-0 offwhite-text">
+            {{ time }}
+          </v-card-subtitle>
+        </div>
+        <v-card-text
+          class="pa-0 pd-1 pl-2 mt-0 offwhite-text"
+          v-html="regexMarkedContent"
+        ></v-card-text>
+      </v-card>
+      <div style="height: 10px;"></div>
+    </div>
     <span
       v-else-if="logMode === LogMode.TERMINAL"
       :id="`msg-${id}`"
