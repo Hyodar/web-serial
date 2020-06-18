@@ -124,6 +124,7 @@ export default {
     addEntry(msg, author) {
       const elapsedTime = Date.now() - this.lastSentMessage[author].time;
       const lastMessage = this.lastSentMessage[author];
+      let shouldScrollToBottom = false;
 
       if (elapsedTime < 500) {
         const index = this.messageIndexSearch(lastMessage.id, lastMessage.index);
@@ -131,6 +132,10 @@ export default {
         lastMessage.time = Date.now();
       }
       else {
+        const scrollerEl = this.$refs.scroller.$refs.scroller.$el;
+        const scrollerBottom = scrollerEl.scrollTop + scrollerEl.offsetHeight;
+        shouldScrollToBottom = (scrollerBottom === scrollerEl.scrollHeight);
+
         this.messages.push({
           id: this.msgIdCount++,
           time: this.getCurrentTime(),
@@ -149,8 +154,8 @@ export default {
         };
       }
 
-      if (this.lastScrollMessageIndex >= this.messages.length - 5) {
-        setTimeout(this.scrollToBottom.bind(this), 100);
+      if (shouldScrollToBottom) {
+        this.scrollToBottom();
       }
     },
 
