@@ -1,13 +1,16 @@
 
-function isRegex(str) {
-    const validFlags = "gimusy";
-    const flags = str.slice(str.lastIndexOf('/') + 1);
+const validFlags = "gimusy"
+const unionReplacerFlags = "gms";
+const noMatchRegexString = "a^";
 
-    if (str.startsWith('/') && Array.from(flags).every(el => validFlags.includes(el)) && flags.length <= validFlags.length) {
-        return flags;
-    }
-    
-    return false;
+function maybeSlashEnclosed(str) {
+    const firstSlashPos = str.indexOf("/");
+    const lastSlashPos = str.lastIndexOf("/");
+
+    return firstSlashPos !== -1 
+        && lastSlashPos !== -1
+        && firstSlashPos !== lastSlashPos
+        && (str.length - lastSlashPos - 1) <= validFlags.length;
 }
 
-export { isRegex };
+export { maybeSlashEnclosed, noMatchRegexString, unionReplacerFlags };

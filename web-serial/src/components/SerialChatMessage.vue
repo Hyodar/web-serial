@@ -54,6 +54,7 @@
 
 import { strToBase } from "../utils/textConversion";
 import { charOrSquare } from "../utils/textConversion";
+import { unionReplacerFlags } from "../utils/textRegex";
 
 const colors = Object.freeze({
   self: "primary",
@@ -77,7 +78,7 @@ export default {
 
   computed: {
     regexMarkedContent: function() {
-      return new UnionReplacer(this.expressions, "gm").replace(this.content);
+      return new UnionReplacer(this.expressions, unionReplacerFlags).replace(this.content);
     },
 
     rawContent: function() {

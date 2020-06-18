@@ -33,6 +33,11 @@ const SnackbarMessage = Object.freeze({
       content: "Your serial connection failed somehow. Please try again.",
       timeout: 3000
     },
+    InvalidRegExp: {
+      color: "error",
+      content: "There seemed to be something wrong with your RegExp. It's now back to the default.",
+      timeout: 3000
+    },
     Custom: (description) => ({
       color: "error",
       content: description,
@@ -50,6 +55,11 @@ const SnackbarMessage = Object.freeze({
     SerialConnectionClosed: {
       color: "warning",
       content: "The serial connection was closed.",
+      timeout: 5000
+    },
+    NoRegexSlashes: {
+      color: "warning",
+      content: "Hmm... Did you write your regex with '/' and flags? Those will be treated as actual characters, as you only need to write the regex content. The default flags are 'gms'.",
       timeout: 5000
     }
   }

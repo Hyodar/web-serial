@@ -26,7 +26,9 @@
 </template>
 
 <script>
-import { isRegex } from "../utils/textRegex";
+import { maybeSlashEnclosed } from "../utils/textRegex";
+import { noMatchRegexString } from "../utils/textRegex";
+import SnackbarMessage from "../classes/SnackbarMessage";
 
 export default {
   name: "ExpressionEditor",
@@ -46,7 +48,7 @@ export default {
       this.expression = expression;
       this.previousExpression = Object.assign({}, expression);
 
-      this.expressionField = this.expression.expression.toString();
+      this.expressionField = this.expression.expression.toString().slice(1, -1);
     },
 
     closeDialog(save=false) {
@@ -56,13 +58,16 @@ export default {
         return;
       }
 
-      const flags = isRegex(this.expressionField);
+      try {
+        if (maybeSlashEnclosed(this.expressionField)) {
+          this.$emit("snackbar", SnackbarMessage.Warning.NoRegexSlashes);
+        }
 
-      if (flags) {
-        this.expression.expression = new RegExp(this.expressionField.slice(1, - (1 + flags.length)), flags);
+        this.expression.expression = new RegExp(this.expressionField, "");
       }
-      else {
-        this.expression.expression = new RegExp(this.expressionField, "gm");
+      catch {
+        this.$emit("snackbar", SnackbarMessage.Error.InvalidRegExp);
+        this.expression.expression = new RegExp(noMatchRegexString, "");
       }
 
       this.dialog = false;

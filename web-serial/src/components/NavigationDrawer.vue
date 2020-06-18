@@ -118,7 +118,7 @@
         </v-btn>
       </v-row>
 
-      <ExpressionEditor ref="expressionEditor" />
+      <ExpressionEditor ref="expressionEditor" v-on:snackbar="sendSnackbar($event)"/>
 
       <v-divider class="ma-2"></v-divider>
 
@@ -174,6 +174,7 @@ import SnackbarMessage from "../classes/SnackbarMessage";
 
 import HorizontalSelection from "./HorizontalSelection";
 import ExpressionEditor from "./ExpressionEditor";
+import { noMatchRegexString } from '../utils/textRegex';
 
 export default {
   name: "NavigationDrawer",
@@ -243,14 +244,14 @@ export default {
       navigator.serial.onconnect = () => {
         this.menus.serialConnection.loading = false;
 
-        this.$emit("snackbar", SnackbarMessage.Success.SerialConnectionOpened);
+        this.sendSnackbar(SnackbarMessage.Success.SerialConnectionOpened);
         this.$emit("serialConnected");
       }
 
       navigator.serial.ondisconnect = () => {
         this.menus.serialConnection.loading = false;
 
-        this.$emit("snackbar", SnackbarMessage.Warning.SerialConnectionClosed);
+        this.sendSnackbar(SnackbarMessage.Warning.SerialConnectionClosed);
         this.$emit("serialDisconnected");
       }
     }
@@ -281,13 +282,13 @@ export default {
         port = await navigator.serial.requestPort();
       }
       catch (e) {
-        this.$emit("snackbar", SnackbarMessage.Error.Custom(`Serial port request error: ${e}`));
+        this.sendSnackbar(SnackbarMessage.Error.Custom(`Serial port request error: ${e}`));
         this.menus.serialConnection.loading = false;
         return;
       }
 
       if (!port) {
-        this.$emit("snackbar", SnackbarMessage.Error.NoPortSelected);
+        this.sendSnackbar(SnackbarMessage.Error.NoPortSelected);
         this.menus.serialConnection.loading = false;
         return;
       }
@@ -298,14 +299,14 @@ export default {
         await port.open(this.optionData.serialConnection.serialOptions);
       }
       catch (e) {
-        this.$emit("snackbar", SnackbarMessage.Error.Custom(`Serial port opening error: ${e}`));
+        this.sendSnackbar(SnackbarMessage.Error.Custom(`Serial port opening error: ${e}`));
         this.menus.serialConnection.loading = false;
         return;
       }
 
       this.menus.serialConnection.loading = false;
 
-      this.$emit("snackbar", SnackbarMessage.Success.SerialConnectionOpened);
+      this.sendSnackbar(SnackbarMessage.Success.SerialConnectionOpened);
       this.$emit("serialConnected");
     },
 
@@ -333,7 +334,7 @@ export default {
       this.optionData.expressions.push({
         name: `Expression ${this.menus.expressions.count++}`,
         active: false,
-        expression: new RegExp("a^", "gm"),
+        expression: new RegExp(noMatchRegexString, ""),
         color: "#ffffff",
         colorEdit: false
       });
@@ -341,6 +342,10 @@ export default {
 
     openExpressionEditor(expression) {
       this.$refs.expressionEditor.openDialog(expression);
+    },
+
+    sendSnackbar(snackbarMessage) {
+      this.$emit("snackbar", snackbarMessage);
     }
   }
 }
