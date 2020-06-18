@@ -2,7 +2,7 @@
   <v-snackbar
     top
     v-model="isOn"
-    v-if="isOn"
+    v-if="content"
     :color="content.color"
     :timeout="content.timeout"
   >
@@ -15,7 +15,7 @@
     >
       {{ button.text }}
     </v-btn>
-    <v-btn text v-on:click="isOn = false"> Close </v-btn>
+    <v-btn text v-on:click="close"> Close </v-btn>
   </v-snackbar>
 </template>
 
@@ -25,18 +25,33 @@ export default {
 
   data: () => ({
     isOn: false,
-    content: null
+    content: null,
+    closeTimeout: null,
   }),
 
   methods: {
     setMessage(msg) {
-      this.content = msg;
-    }
-  },
+      if (this.isOn) {
+        this.close();
+      }
 
-  watch: {
-    content: function() {
       this.isOn = true;
+      this.content = msg;
+
+      if (msg.timeout !== -1) {
+        this.closeTimeout = setTimeout(() => {
+          this.close();
+        }, msg.timeout);
+      }
+    },
+
+    close() {
+      if (this.closeTimeout) {
+        clearTimeout(this.closeTimeout);
+        this.closeTimeout = null;
+      }
+      this.isOn = false;
+      this.content = null;
     }
   }
 };
