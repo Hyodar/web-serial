@@ -1,6 +1,5 @@
 <template>
   <v-container style="background-color: #363636; height: calc(100% - 150px);" id="chatContainer">
-    <v-btn v-on:click="clickTestBtn"> asddas </v-btn>
     <v-card outlined :style="{'backgroundColor': chatBackgroundColor, 'transition': '0.2s ease-in-out background-color'}">
       <DynamicScroller
         ref="scroller"
@@ -126,7 +125,7 @@ export default {
       const elapsedTime = Date.now() - this.lastSentMessage[author].time;
       const lastMessage = this.lastSentMessage[author];
 
-      if (elapsedTime < 0) {
+      if (elapsedTime < 500) {
         const index = this.messageIndexSearch(lastMessage.id, lastMessage.index);
         this.messages[index].content += msg;
         lastMessage.time = Date.now();
@@ -179,25 +178,6 @@ export default {
 
     scrollerUpdate(startIdx, endIdx) {
       this.lastScrollMessageIndex = endIdx;
-    },
-
-    test() {
-      for (let i = 0; i < 10; i++) {
-        this.addEntry("asdasdasd", "self");
-      }
-
-      this.scrollToBottom();
-
-      if (this.testing) {
-        requestAnimationFrame(this.test);
-      }
-    },
-
-    clickTestBtn() {
-      this.testing = !this.testing;
-      if (this.testing) {
-        this.test();
-      }
     }
   },
 
