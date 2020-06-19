@@ -5,7 +5,7 @@ function charToBase(chr, base, minLength=0) {
 
 const asciiPrintableRegex = /^[ -~]+$/;
 
-const knownAsciiCodes = [
+const knownAsciiCodes = Object.freeze([
     "NUL", "SOH", "STX", "ETX",
     "EOT", "ENQ", "ACK", "BEL",
     "BS", "HT", "LF", "VT",
@@ -14,11 +14,15 @@ const knownAsciiCodes = [
     "DC4", "NAK", "SYN", "ETB",
     "CAN", "EM", "SUB", "ESC",
     "FS", "GS", "RS", "US"
-];
+]);
 
-const htmlMarkedKnownAsciiCodes = knownAsciiCodes.map(el => {
-    return `<span style="color: yellow">&lt;${el}&gt;</span>`;
-})
+const additionalSuffix = Object.freeze({
+    "LF": "<br>",
+});
+
+const htmlMarkedKnownAsciiCodes = Object.freeze(knownAsciiCodes.map(el => {
+    return `<span style="color: yellow">&lt;${el}&gt;</span>${additionalSuffix[el] || ""}`;
+}));
 
 function knownAsciiCodeOrSquare(chr) {
     return htmlMarkedKnownAsciiCodes[chr.charCodeAt(0)] || '\u{25a1}';

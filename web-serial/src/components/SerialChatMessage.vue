@@ -23,15 +23,14 @@
       </v-card>
       <div style="height: 10px;"></div>
     </div>
-    <span
+    <div
       v-else-if="logMode === LogMode.TERMINAL"
       :id="`msg-${id}`"
       style="font-family: monospace;"
     >
       <span :class="[colors[author]]" style="border-radius: 5px;">>></span>
       {{ time }} - <span v-html="regexMarkedContent"></span>
-      <br />
-    </span>
+    </div>
   </div>
 </template>
 
