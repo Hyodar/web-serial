@@ -170,7 +170,6 @@
 import DisplayMode from "../classes/DisplayMode";
 import LogMode from "../classes/LogMode";
 import SerialConnectionFlags from "../classes/SerialConnectionFlags";
-import SnackbarMessage from "../classes/SnackbarMessage";
 
 import HorizontalSelection from "./HorizontalSelection";
 import ExpressionEditor from "./ExpressionEditor";
@@ -239,80 +238,31 @@ export default {
 
   mounted: function() {
     this.drawer = this.active;
-
-    if ("serial" in navigator) {
-      navigator.serial.onconnect = () => {
-        this.menus.serialConnection.loading = false;
-
-        this.sendSnackbar(SnackbarMessage.Success.SerialConnectionOpened);
-        this.$emit("serialConnected");
-      }
-
-      navigator.serial.ondisconnect = () => {
-        this.menus.serialConnection.loading = false;
-
-        this.sendSnackbar(SnackbarMessage.Warning.SerialConnectionClosed);
-        this.$emit("serialDisconnected");
-      }
-    }
   },
 
   computed: {
     serialConnectionButtonText: function() {
-      return (this.optionData.serialConnection.port)? 'Close' : 'Go!';
+      return (this.optionData.serialConnection.active)? 'Close' : 'Go!';
     }
   },
 
   methods: {
-    toggleSerialConnection: async function() {
+    toggleSerialConnection() {
       this.menus.serialConnection.loading = true;
 
-      if (!this.optionData.serialConnection.port) {
-        await this.openSerialConnection();
+      if (!this.optionData.serialConnection.active) {
+        this.openSerialConnection();
       }
       else {
-        await this.closeSerialConnection();
+        this.closeSerialConnection();
       }
     },
 
-    openSerialConnection: async function() {
-      let port = null;
-
-      try {
-        port = await navigator.serial.requestPort();
-      }
-      catch (e) {
-        this.sendSnackbar(SnackbarMessage.Error.Custom(`Serial port request error: ${e}`));
-        this.menus.serialConnection.loading = false;
-        return;
-      }
-
-      if (!port) {
-        this.sendSnackbar(SnackbarMessage.Error.NoPortSelected);
-        this.menus.serialConnection.loading = false;
-        return;
-      }
-
-      this.optionData.serialConnection.port = port;
-
-      try {
-        await port.open(this.optionData.serialConnection.serialOptions);
-      }
-      catch (e) {
-        this.sendSnackbar(SnackbarMessage.Error.Custom(`Serial port opening error: ${e}`));
-        this.menus.serialConnection.loading = false;
-        return;
-      }
-
-      this.menus.serialConnection.loading = false;
-
-      this.sendSnackbar(SnackbarMessage.Success.SerialConnectionOpened);
+    openSerialConnection() {
       this.$emit("serialConnected");
     },
 
     closeSerialConnection() {
-      this.menus.serialConnection.loading = false;
-
       this.$emit("serialDisconnected");
     },
 
@@ -346,6 +296,10 @@ export default {
 
     sendSnackbar(snackbarMessage) {
       this.$emit("snackbar", snackbarMessage);
+    },
+
+    setSerialLoading(isLoading) {
+      this.menus.serialConnection.loading = isLoading;
     }
   }
 }

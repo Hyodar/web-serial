@@ -49,6 +49,11 @@ const SnackbarMessage = Object.freeze({
       color: "success",
       content: "Successfully opened a serial connection!",
       timeout: 2000
+    },
+    SerialConnectionClosed: {
+      color: "success",
+      content: "Successfully closed a serial connection!",
+      timeout: 2000
     }
   },
   Warning: {

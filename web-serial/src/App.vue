@@ -58,6 +58,7 @@ import SerialChat from "./components/SerialChat";
 import SerialInput from "./components/SerialInput";
 import Snackbar from "./components/Snackbar";
 
+import BrowserSerial from "./classes/BrowserSerial";
 import SnackbarMessage from "./classes/SnackbarMessage";
 import DisplayMode from "./classes/DisplayMode";
 import LogMode from "./classes/LogMode";
@@ -73,19 +74,21 @@ export default {
   },
 
   mounted() {
-    if (!("serial" in navigator)) {
-      this.setSnackbarMessage(SnackbarMessage.Error.NoWebSerial);
-      return;
+    try {
+      BrowserSerial.checkCompatibility();
     }
-
-    if (!("TextDecoderStream" in window)) {
-      this.setSnackbarMessage(SnackbarMessage.Error.NoTextDecoderStream);
-      return;
-    }
-
-    if (!("TextEncoderStream" in window)) {
-      this.setSnackbarMessage(SnackbarMessage.Error.NoTextEncoderStream);
-      return;
+    catch (e) {
+      switch(e) {
+        case BrowserSerial.Error.NoWebSerial:
+          this.setSnackbarMessage(SnackbarMessage.Error.NoWebSerial);
+          return;
+        case BrowserSerial.Error.NoTextDecoderStream:
+          this.setSnackbarMessage(SnackbarMessage.Error.NoTextDecoderStream);
+          return;
+        case BrowserSerial.Error.NoTextEncoderStream:
+          this.setSnackbarMessage(SnackbarMessage.Error.NoTextEncoderStream);
+          return;    
+      }
     }
   },
 
@@ -93,11 +96,7 @@ export default {
     snackbarMessage: null,
     showAsTerminal: false,
 
-    serialWriterClosed: null,
-    serialReaderClosed: null,
-
-    serialWriter: null,
-    serialReader: null,
+    browserSerial: null,
 
     navigationDrawer: {
       active: true,
@@ -105,7 +104,7 @@ export default {
         logMode: LogMode.CHAT,
         displayMode: DisplayMode.ASCII,
         serialConnection: {
-          port: null,
+          active: false,
           serialOptions: {
             baudrate: null,
             databits: 8,
@@ -127,8 +126,8 @@ export default {
     sendMessage(messageContent) {
       this.$refs.chat.addEntry(messageContent, "self");
 
-      if (this.serialWriter) {
-        this.serialWriter.write(messageContent);
+      if (this.browserSerial) {
+        this.browserSerial.write(messageContent);
       }
     },
 
@@ -140,72 +139,52 @@ export default {
       this.$refs.drawer.toggle();
     },
 
-    openSerial() {
-      const port = this.navigationDrawer.optionData.serialConnection.port;
+    async openSerial() {
+      this.browserSerial = new BrowserSerial({
+        decodeFrom: "ascii",
+        readLoopCallback: chunk => {
+          this.$refs.chat.addEntry(chunk, "serial");
+        }
+      });
 
-      if (!(port && port.readable && port.writable)) {
-        this.setSnackbarMessage(SnackbarMessage.Error.ConnectionFailed);
+      this.browserSerial.addEventListener("disconnect", () => {
+        this.closeSerial(true);
+        this.setSnackbarMessage(SnackbarMessage.Warning.SerialConnectionClosed);
+        this.$refs.drawer.setSerialLoading(false);
+      });
+
+      try {
+        await this.browserSerial.requestPort();
+      }
+      catch {
+        this.$refs.drawer.setSerialLoading(false);
+        this.setSnackbarMessage(SnackbarMessage.Error.NoPortSelected);
         return;
       }
 
-      this.initializeReader(port);
-      this.initializeWriter(port);
-    },
-
-    initializeReader(port) {
-      const decoder = new window.TextDecoderStream("ascii");
-
-      this.serialReaderClosed = port.readable
-        .pipeTo(decoder.writable);
-
-      this.serialReader = decoder.readable.getReader();
-      this.readSerial();
-    },
-
-    initializeWriter(port) {
-      const encoder = new window.TextEncoderStream();
-      this.serialWriterClosed = encoder.readable
-        .pipeTo(port.writable);
-
-      this.serialWriter = encoder.writable.getWriter();
-    },
-
-    async closeSerial() {
-      const port = this.navigationDrawer.optionData.serialConnection.port;
-
-      if (this.serialWriter) {
-        this.serialWriter.close();
-        await this.writableStreamClosed;
+      try {
+        await this.browserSerial.openConnection(this.navigationDrawer.optionData.serialConnection.serialOptions);
+      }
+      catch (e) {
+        this.$refs.drawer.setSerialLoading(false);
+        this.setSnackbarMessage(SnackbarMessage.Error.Custom(`Serial port opening error: ${e}`));
+        return;
       }
 
-      if (this.serialReader) {
-        this.serialReader.cancel();
-        await this.serialReaderClosed.catch(() => {});
-      }
-
-      if (port) {
-        await port.close();
-      }
-
-      this.serialReader = null;
-      this.serialWriter = null;
-      this.serialReaderClosed = null;
-      this.serialWriterClosed = null;
-      this.navigationDrawer.optionData.serialConnection.port = null;
+      this.navigationDrawer.optionData.serialConnection.active = true;
+      this.$refs.drawer.setSerialLoading(false);
+      this.setSnackbarMessage(SnackbarMessage.Success.SerialConnectionOpened);
     },
 
-    async readSerial() {
-      for (;;) {
-        const { value, done } = await this.serialReader.read();
-
-        if (done) {
-          break;
-        }
-
-        this.$refs.chat.addEntry(value, "serial");
+    async closeSerial(disconnect=false) {
+      if (!disconnect) {
+        await this.browserSerial.close();
       }
 
-      this.serialReader.releaseLock();
+      this.navigationDrawer.optionData.serialConnection.active = false;
+      this.$refs.drawer.setSerialLoading(false);
+      this.browserSerial = null;
+      this.setSnackbarMessage(SnackbarMessage.Success.SerialConnectionClosed);
     }
   }
 };
