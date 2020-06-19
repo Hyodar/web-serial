@@ -1,5 +1,5 @@
 <template>
-  <v-container style="background-color: #363636; height: calc(100% - 150px);" id="chatContainer">
+  <v-container id="chatContainer">
     <v-card outlined :style="{'backgroundColor': chatBackgroundColor, 'transition': '0.2s ease-in-out background-color'}">
       <DynamicScroller
         ref="scroller"
@@ -37,6 +37,17 @@
     </v-card>
   </v-container>
 </template>
+
+<style scoped>
+#chatContainer {
+  background-color: #363636;
+  height: calc(100vh - 130px - 84px);
+}
+
+.scroller {
+  height: calc(0.9 * (100vh - 130px - 84px));
+}
+</style>
 
 <script>
 import SerialChatMessage from "./SerialChatMessage";
@@ -183,19 +194,6 @@ export default {
     scrollerUpdate(startIdx, endIdx) {
       this.lastScrollMessageIndex = endIdx;
     }
-  },
-
-  mounted() {
-    const scrollerToFixedHeight = () => {
-      const scroller = document.querySelector(".scroller");
-      const chatContainer = document.querySelector("#chatContainer");
-      const chatContainerHeight = getComputedStyle(chatContainer).height;
-
-      scroller.style.height = `${parseFloat(chatContainerHeight, 10) * 0.9}px`;
-    };
-
-    scrollerToFixedHeight();
-    window.addEventListener("resize", scrollerToFixedHeight);
   }
 };
 </script>
