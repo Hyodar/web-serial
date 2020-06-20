@@ -40,6 +40,12 @@
         v-model="userOptions.expressions"
         v-on:snackbar="setSnackbarMessage($event)"
       />
+      <CommandList
+        ref="commandList"
+        v-model="userOptions.commands"
+        v-on:sendCommand="sendCommand"
+        v-on:snackbar="setSnackbarMessage($event)"
+      />
     </v-navigation-drawer>
 
     <v-main>
@@ -61,6 +67,7 @@ import SerialOptions from "./components/navigationDrawer/SerialOptions";
 import LogModeOptions from "./components/navigationDrawer/LogModeOptions";
 import DisplayModeOptions from "./components/navigationDrawer/DisplayModeOptions";
 import ExpressionList from "./components/navigationDrawer/ExpressionList";
+import CommandList from "./components/navigationDrawer/CommandList";
 
 import SerialChat from "./components/SerialChat";
 import SerialInput from "./components/SerialInput";
@@ -70,6 +77,8 @@ import BrowserSerial from "./utils/classes/BrowserSerial";
 import SnackbarMessage from "./utils/enums/SnackbarMessage";
 import DisplayMode from "./utils/enums/DisplayMode";
 import LogMode from "./utils/enums/LogMode";
+
+import unescapeJs from "unescape-js";
 
 export default {
   name: "App",
@@ -82,6 +91,7 @@ export default {
     LogModeOptions,
     DisplayModeOptions,
     ExpressionList,
+    CommandList,
   },
 
   mounted() {
@@ -125,16 +135,21 @@ export default {
           xany: false
         }
       },
-      expressions: []
+      expressions: [],
+      commands: [],
     }
   }),
 
   methods: {
-    sendMessage(messageContent) {
-      this.$refs.chat.addEntry(messageContent, "self");
+    sendMessage(messageContent, from="self") {
+      this.$refs.chat.addEntry(messageContent, from);
 
       if (this.browserSerial) {
         this.browserSerial.write(messageContent);
+      }
+
+      if (from === "serial") {
+        this.$refs.commandList.addToScanBuffer(messageContent);
       }
     },
 
@@ -150,7 +165,7 @@ export default {
       this.browserSerial = new BrowserSerial({
         decodeFrom: "ascii",
         readLoopCallback: chunk => {
-          this.$refs.chat.addEntry(chunk, "serial");
+          this.sendMessage(chunk, "serial");
         }
       });
 
@@ -187,6 +202,10 @@ export default {
       this.userOptions.serialConnection.active = false;
       this.browserSerial = null;
       this.setSnackbarMessage(SnackbarMessage.Success.SerialConnectionClosed);
+    },
+
+    sendCommand(content) {
+      this.sendMessage(unescapeJs(content));
     }
   }
 };
