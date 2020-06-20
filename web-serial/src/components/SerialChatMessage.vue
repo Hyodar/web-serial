@@ -56,12 +56,8 @@ import { strToBase } from "../utils/textConversion";
 import { charOrSquare } from "../utils/textConversion";
 import { unionReplacerFlags } from "../utils/textRegex";
 
-const colors = Object.freeze({
-  self: "primary",
-  serial: "secondary"
-});
-
-import LogMode from "../classes/LogMode";
+import MessageColor from "../utils/enums/MessageColor";
+import LogMode from "../utils/enums/LogMode";
 
 import UnionReplacer from "union-replacer";
 
@@ -71,7 +67,7 @@ export default {
   props: ["id", "content", "time", "author", "logMode", "expressions", "displayFunction"],
 
   data: () => ({
-    colors: colors,
+    colors: MessageColor,
     LogMode: LogMode,
     showButton: false
   }),

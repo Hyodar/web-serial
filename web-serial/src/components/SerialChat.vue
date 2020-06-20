@@ -52,8 +52,8 @@
 <script>
 import SerialChatMessage from "./SerialChatMessage";
 
-import DisplayMode from "../classes/DisplayMode";
-import LogMode from "../classes/LogMode";
+import DisplayMode from "../utils/enums/DisplayMode";
+import LogMode from "../utils/enums/LogMode";
 
 import { charOrSquare } from "../utils/textConversion";
 import { charToHex } from "../utils/textConversion";

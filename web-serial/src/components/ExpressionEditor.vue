@@ -28,7 +28,7 @@
 <script>
 import { maybeSlashEnclosed } from "../utils/textRegex";
 import { noMatchRegexString } from "../utils/textRegex";
-import SnackbarMessage from "../classes/SnackbarMessage";
+import SnackbarMessage from "../utils/enums/SnackbarMessage";
 
 export default {
   name: "ExpressionEditor",

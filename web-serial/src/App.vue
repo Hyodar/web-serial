@@ -28,24 +28,28 @@
       <v-app-bar-nav-icon v-on:click.stop="toggleDrawer"></v-app-bar-nav-icon>
     </v-app-bar>
 
-    <NavigationDrawer
-      ref="drawer"
-      :active="navigationDrawer.active"
-      :menus="navigationDrawer.menus"
-      :optionData="navigationDrawer.optionData"
-      v-on:snackbar="setSnackbarMessage"
-      v-on:serialConnected="openSerial"
-      v-on:serialDisconnected="closeSerial"
-    />
+    <v-navigation-drawer v-model="drawer" app right width="350">
+      <SerialOptions
+        :value="userOptions.serialConnection"
+        v-on:serialConnected="openSerial"
+        v-on:serialDisconnected="closeSerial"
+      />
+      <LogModeOptions v-model="userOptions.logMode" />
+      <DisplayModeOptions v-model="userOptions.displayMode" />
+      <ExpressionList
+        v-model="userOptions.expressions"
+        v-on:snackbar="setSnackbarMessage($event)"
+      />
+    </v-navigation-drawer>
 
     <v-main>
       <Snackbar ref="snackbar" />
       <SerialChat
         ref="chat"
-        :logMode="navigationDrawer.optionData.logMode"
-        :displayMode="navigationDrawer.optionData.displayMode"
+        :logMode="userOptions.logMode"
+        :displayMode="userOptions.displayMode"
+        :expressions="userOptions.expressions"
         :messageBufferSize="500"
-        :expressions="navigationDrawer.optionData.expressions"
       />
       <SerialInput v-on:sendMessage="sendMessage" />
     </v-main>
@@ -53,24 +57,31 @@
 </template>
 
 <script>
-import NavigationDrawer from "./components/NavigationDrawer";
+import SerialOptions from "./components/navigationDrawer/SerialOptions";
+import LogModeOptions from "./components/navigationDrawer/LogModeOptions";
+import DisplayModeOptions from "./components/navigationDrawer/DisplayModeOptions";
+import ExpressionList from "./components/navigationDrawer/ExpressionList";
+
 import SerialChat from "./components/SerialChat";
 import SerialInput from "./components/SerialInput";
 import Snackbar from "./components/Snackbar";
 
-import BrowserSerial from "./classes/BrowserSerial";
-import SnackbarMessage from "./classes/SnackbarMessage";
-import DisplayMode from "./classes/DisplayMode";
-import LogMode from "./classes/LogMode";
+import BrowserSerial from "./utils/classes/BrowserSerial";
+import SnackbarMessage from "./utils/enums/SnackbarMessage";
+import DisplayMode from "./utils/enums/DisplayMode";
+import LogMode from "./utils/enums/LogMode";
 
 export default {
   name: "App",
 
   components: {
-    NavigationDrawer,
     SerialChat,
     SerialInput,
-    Snackbar
+    Snackbar,
+    SerialOptions,
+    LogModeOptions,
+    DisplayModeOptions,
+    ExpressionList,
   },
 
   mounted() {
@@ -94,31 +105,27 @@ export default {
 
   data: () => ({
     snackbarMessage: null,
-    showAsTerminal: false,
-
     browserSerial: null,
+    drawer: true,
 
-    navigationDrawer: {
-      active: true,
-      optionData: {
-        logMode: LogMode.CHAT,
-        displayMode: DisplayMode.ASCII,
-        serialConnection: {
-          active: false,
-          serialOptions: {
-            baudrate: null,
-            databits: 8,
-            stopbits: 1,
-            parity: "none",
-            buffersize: 255,
-            rtscts: false,
-            xon: false,
-            xoff: false,
-            xany: false
-          }
-        },
-        expressions: []
-      }
+    userOptions: {
+      logMode: LogMode.CHAT,
+      displayMode: DisplayMode.ASCII,
+      serialConnection: {
+        active: false,
+        serialOptions: {
+          baudrate: null,
+          databits: 8,
+          stopbits: 1,
+          parity: "none",
+          buffersize: 255,
+          rtscts: false,
+          xon: false,
+          xoff: false,
+          xany: false
+        }
+      },
+      expressions: []
     }
   }),
 
@@ -136,7 +143,7 @@ export default {
     },
 
     toggleDrawer() {
-      this.$refs.drawer.toggle();
+      this.drawer = !this.drawer;
     },
 
     async openSerial() {
@@ -150,29 +157,25 @@ export default {
       this.browserSerial.addEventListener("disconnect", () => {
         this.closeSerial(true);
         this.setSnackbarMessage(SnackbarMessage.Warning.SerialConnectionClosed);
-        this.$refs.drawer.setSerialLoading(false);
       });
 
       try {
         await this.browserSerial.requestPort();
       }
       catch {
-        this.$refs.drawer.setSerialLoading(false);
         this.setSnackbarMessage(SnackbarMessage.Error.NoPortSelected);
         return;
       }
 
       try {
-        await this.browserSerial.openConnection(this.navigationDrawer.optionData.serialConnection.serialOptions);
+        await this.browserSerial.openConnection(this.userOptions.serialConnection.serialOptions);
       }
       catch (e) {
-        this.$refs.drawer.setSerialLoading(false);
         this.setSnackbarMessage(SnackbarMessage.Error.Custom(`Serial port opening error: ${e}`));
         return;
       }
 
-      this.navigationDrawer.optionData.serialConnection.active = true;
-      this.$refs.drawer.setSerialLoading(false);
+      this.userOptions.serialConnection.active = true;
       this.setSnackbarMessage(SnackbarMessage.Success.SerialConnectionOpened);
     },
 
@@ -181,8 +184,7 @@ export default {
         await this.browserSerial.close();
       }
 
-      this.navigationDrawer.optionData.serialConnection.active = false;
-      this.$refs.drawer.setSerialLoading(false);
+      this.userOptions.serialConnection.active = false;
       this.browserSerial = null;
       this.setSnackbarMessage(SnackbarMessage.Success.SerialConnectionClosed);
     }
