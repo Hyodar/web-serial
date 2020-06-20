@@ -84,13 +84,13 @@ export default {
   computed: {
     activeExpressions: function() {
       const unionReplacerExpressions = this.expressions
-      .filter(el => el.active)
-      .map(el => {
-        return [
-          el.expression,
-          match => `<span style="background-color: ${el.color}">${strToBase(match, this.displayFunction)}</span>`
-        ]
-      });
+        .filter(el => el.active)
+        .map(el => {
+          return [
+            el.expression,
+            match => `<span style="background-color: ${el.color}">${strToBase(match, this.displayFunction)}</span>`
+          ]
+        });
 
       unionReplacerExpressions.push([/[\s\S]/gm, match => strToBase(match, this.displayFunction)]);
 
