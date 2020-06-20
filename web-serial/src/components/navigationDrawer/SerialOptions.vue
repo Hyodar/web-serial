@@ -2,7 +2,7 @@
   <NavigationDrawerRow label="Serial Connection">
     <v-col :cols="9">
       <v-autocomplete
-        v-model="value.baudrate"
+        v-model="value.serialOptions.baudrate"
         :items="menus.baudrate.suggestions"
         label="Baud Rate"
       ></v-autocomplete>
@@ -27,14 +27,14 @@
               <v-col>
                 <v-select
                   :items="menus.parity.options"
-                  :value="value.parity"
+                  :value="value.serialOptions.parity"
                   label="Parity Type"
                 ></v-select>
               </v-col>
               <v-col>
                 <v-text-field
                   type="number"
-                  :value="value.buffersize"
+                  :value="value.serialOptions.buffersize"
                   label="Buffer Size"
                 ></v-text-field>
               </v-col>
