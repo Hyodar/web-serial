@@ -46,6 +46,7 @@
 
 .scroller {
   height: calc(0.9 * (100vh - 130px - 84px));
+  scroll-behavior: smooth;
 }
 </style>
 
