@@ -1,7 +1,7 @@
 
 class BrowserSerial {
 
-    static Errors = Object.freeze({
+    static Error = Object.freeze({
         NoWebSerial: new Error(
             "This browser doesn't support or hasn't enabled the WebSerialAPI."
         ),
