@@ -110,7 +110,7 @@ export default {
           return;
         case BrowserSerial.Error.NoTextEncoderStream:
           this.setSnackbarMessage(SnackbarMessage.Error.NoTextEncoderStream);
-          return;    
+          return;
       }
     }
   },
