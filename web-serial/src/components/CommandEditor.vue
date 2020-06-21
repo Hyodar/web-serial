@@ -79,16 +79,18 @@ export default {
         return;
       }
 
-      try {
-        if (maybeSlashEnclosed(this.sequenceField)) {
-          this.$emit("snackbar", SnackbarMessage.Warning.NoRegexSlashes);
-        }
+      if (this.sequenceField) {
+        try {
+          if (maybeSlashEnclosed(this.sequenceField)) {
+            this.$emit("snackbar", SnackbarMessage.Warning.NoRegexSlashes);
+          }
 
-        this.command.sequence = new RegExp(this.sequenceField, unionReplacerFlags);
-      }
-      catch {
-        this.$emit("snackbar", SnackbarMessage.Error.InvalidRegExp);
-        this.command.sequence = null;
+          this.command.sequence = new RegExp(this.sequenceField, unionReplacerFlags);
+        }
+        catch {
+          this.$emit("snackbar", SnackbarMessage.Error.InvalidRegExp);
+          this.command.sequence = null;
+        }
       }
 
       this.dialog = false;
