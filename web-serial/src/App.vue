@@ -28,7 +28,7 @@
       <v-app-bar-nav-icon v-on:click.stop="toggleDrawer"></v-app-bar-nav-icon>
     </v-app-bar>
 
-    <v-navigation-drawer v-model="drawer" app right width="350">
+    <NavigationDrawer v-model="drawer">
       <SerialOptions
         :value="userOptions.serialConnection"
         v-on:serialConnected="openSerial"
@@ -46,7 +46,7 @@
         v-on:sendCommand="sendCommand"
         v-on:snackbar="setSnackbarMessage($event)"
       />
-    </v-navigation-drawer>
+    </NavigationDrawer>
 
     <v-main>
       <Snackbar ref="snackbar" />
@@ -62,23 +62,6 @@
   </v-app>
 </template>
 
-<style>
-.v-navigation-drawer__content::-webkit-scrollbar-track {
-	border-radius: 10px;
-	background-color: #f5f5f500;
-}
-
-.v-navigation-drawer__content::-webkit-scrollbar {
-	width: 6px;
-	background-color: #f5f5f500;
-}
-
-.v-navigation-drawer__content::-webkit-scrollbar-thumb {
-	border-radius: 10px;
-	background-color: #ffffff42;
-}
-</style>
-
 <script>
 import SerialOptions from "./components/navigationDrawer/SerialOptions";
 import LogModeOptions from "./components/navigationDrawer/LogModeOptions";
@@ -86,6 +69,7 @@ import DisplayModeOptions from "./components/navigationDrawer/DisplayModeOptions
 import ExpressionList from "./components/navigationDrawer/ExpressionList";
 import CommandList from "./components/navigationDrawer/CommandList";
 
+import NavigationDrawer from "./components/NavigationDrawer";
 import SerialChat from "./components/SerialChat";
 import SerialInput from "./components/SerialInput";
 import Snackbar from "./components/Snackbar";
@@ -101,6 +85,7 @@ export default {
   name: "App",
 
   components: {
+    NavigationDrawer,
     SerialChat,
     SerialInput,
     Snackbar,
