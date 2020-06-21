@@ -6,7 +6,7 @@
         :items="messages"
         :min-item-size="24"
         :buffer="300"
-        class="scroller"
+        class="scroller custom-scrollbar"
         :emitUpdate="true"
         @resize="scrollToBottom"
         v-on:update="scrollerUpdate"
@@ -38,7 +38,7 @@
   </v-container>
 </template>
 
-<style scoped>
+<style>
 #chatContainer {
   background-color: #363636;
   height: calc(100vh - 130px - 84px);
@@ -48,6 +48,22 @@
   height: calc(0.9 * (100vh - 130px - 84px));
   scroll-behavior: smooth;
 }
+
+.custom-scrollbar::-webkit-scrollbar-track {
+	border-radius: 10px;
+	background-color: #f5f5f500;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+	width: 6px;
+	background-color: #f5f5f500;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+	border-radius: 10px;
+	background-color: #ffffff42;
+}
+
 </style>
 
 <script>

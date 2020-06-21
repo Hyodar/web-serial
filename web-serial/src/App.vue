@@ -62,6 +62,23 @@
   </v-app>
 </template>
 
+<style>
+.v-navigation-drawer__content::-webkit-scrollbar-track {
+	border-radius: 10px;
+	background-color: #f5f5f500;
+}
+
+.v-navigation-drawer__content::-webkit-scrollbar {
+	width: 6px;
+	background-color: #f5f5f500;
+}
+
+.v-navigation-drawer__content::-webkit-scrollbar-thumb {
+	border-radius: 10px;
+	background-color: #ffffff42;
+}
+</style>
+
 <script>
 import SerialOptions from "./components/navigationDrawer/SerialOptions";
 import LogModeOptions from "./components/navigationDrawer/LogModeOptions";
