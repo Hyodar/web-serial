@@ -1,12 +1,27 @@
 <template>
   <NavigationDrawerRow>
     <template v-slot:header>
+      <InfoDialog label="Expressions">
+        <p>
+          The <b>expression</b> list is used for <b>expressions</b>
+          that you'd like to highlight, for example a network packet.
+        </p>
+        <p>
+          You can specify those using traditional RegEx and then choose any
+          highlight color - <b> it's as simple as that. </b>
+        </p>
+        <p>
+          However, note that the expressions are matched in the list order
+          character per character, so if you want something to be matched
+          with higher priority, it has to be on the top of the list.
+        </p>
+      </InfoDialog>
       <v-spacer></v-spacer>
-        <div class="text-button"> Expressions </div>
-        <v-spacer></v-spacer>
-        <v-btn icon v-on:click="addNewExpression" small>
-          <v-icon> mdi-plus </v-icon>
-        </v-btn>
+      <div class="text-button"> Expressions </div>
+      <v-spacer></v-spacer>
+      <v-btn icon v-on:click="addNewExpression" small>
+        <v-icon> mdi-plus </v-icon>
+      </v-btn>
     </template>
 
     <ExpressionEditor ref="expressionEditor" v-on:snackbar="sendSnackbar($event)" />
@@ -109,6 +124,7 @@
 <script>
 import { noMatchRegexString } from '../../utils/textRegex';
 
+import InfoDialog from "../InfoDialog";
 import ExpressionEditor from "../ExpressionEditor";
 import NavigationDrawerRow from "./NavigationDrawerRow";
 
@@ -116,6 +132,7 @@ export default {
   name: "ExpressionList",
 
   components: {
+    InfoDialog,
     ExpressionEditor,
     NavigationDrawerRow,
   },
@@ -144,6 +161,10 @@ export default {
     openExpressionEditor(expression) {
       this.$refs.expressionEditor.openDialog(expression);
     },
+
+    openInfo() {
+
+    }
   },
 }
 </script>
