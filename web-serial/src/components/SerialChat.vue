@@ -8,7 +8,6 @@
         :buffer="300"
         class="scroller custom-scrollbar"
         :emitUpdate="true"
-        @resize="scrollToBottom"
         v-on:update="scrollerUpdate"
       >
         <template v-slot="{ item, index, active }">
