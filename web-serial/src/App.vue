@@ -45,6 +45,7 @@
         v-model="userOptions.commands"
         v-on:sendCommand="sendCommand"
         v-on:snackbar="setSnackbarMessage($event)"
+        :scanBufferSize="1000"
       />
     </NavigationDrawer>
 
@@ -143,14 +144,14 @@ export default {
   }),
 
   methods: {
-    sendMessage(messageContent, from="self") {
+    sendMessage(messageContent, from="self", isCommand=false) {
       this.$refs.chat.addEntry(messageContent, from);
 
       if (this.browserSerial) {
         this.browserSerial.write(messageContent);
       }
 
-      if (from === "serial") {
+      if (from === "serial" && !isCommand) {
         this.$refs.commandList.addToScanBuffer(messageContent);
       }
     },
@@ -207,7 +208,7 @@ export default {
     },
 
     sendCommand(content) {
-      this.sendMessage(unescapeJs(content));
+      this.sendMessage(unescapeJs(content), "self", true);
     }
   }
 };

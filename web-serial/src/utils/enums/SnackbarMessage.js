@@ -54,7 +54,12 @@ const SnackbarMessage = Object.freeze({
       color: "success",
       content: "Successfully closed a serial connection!",
       timeout: 2000
-    }
+    },
+    CommandTriggered: (commandName) => ({
+      color: "success",
+      content: `The command '${commandName}' was triggered!`,
+      timeout: 1000
+    })
   },
   Warning: {
     SerialConnectionClosed: {

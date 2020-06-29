@@ -55,6 +55,7 @@
 import InfoDialog from "../InfoDialog";
 import CommandEditor from "../CommandEditor";
 import NavigationDrawerRow from "./NavigationDrawerRow";
+import SnackbarMessage from '../../utils/enums/SnackbarMessage';
 
 export default {
   name: "CommandList",
@@ -65,11 +66,10 @@ export default {
     NavigationDrawerRow,
   },
 
-  props: ["value"],
+  props: ["value", "scanBufferSize"],
 
   data: () => ({
     commandCount: 0,
-    scanTimeout: null,
     scanBuffer: "",
   }),
 
@@ -83,6 +83,7 @@ export default {
         name: `Command ${this.commandCount++}`,
         content: "",
         sequence: null,
+        scanCursor: 0,
       });
     },
 
@@ -97,13 +98,13 @@ export default {
     },
 
     addToScanBuffer(chunk) {
-      if (this.scanTimeout) {
-        clearTimeout(this.scanTimeout);
-        this.scanTimeout = null;
+      this.scanBuffer += chunk;
+
+      if (this.scanBuffer.length > this.scanBufferSize) {
+        this.scanBuffer = this.scanBuffer.slice(this.scanBuffer.length - this.scanBufferSize);
       }
 
-      this.scanBuffer += chunk;
-      this.scanTimeout = setTimeout(this.checkMatches.bind(this), 300);
+      this.checkMatches();
     },
 
     checkMatches() {
@@ -111,21 +112,24 @@ export default {
         return;
       }
 
-      this.value.forEach(command => {
-        if (command.sequence) {
-          const result = this.scanBuffer
-            .match(command.sequence)
-            .filter(el => el);
+      this.value.filter(command => command.sequence)
+        .forEach(command => {
+          const initialScanCursor = command.scanCursor;
+          const substr = this.scanBuffer.slice(initialScanCursor);
+          const matches = substr.matchAll(command.sequence);
 
-          if (result) {
-            for (let i = 0; i < result.length; i++) {
-              this.sendCommand(command.content);
-            }
+          for (const match of matches) {
+            if (!match[0]) continue;
+
+            command.scanCursor = Math.max(
+              command.scanCursor,
+              initialScanCursor + match.index + match[0].length
+            );
+
+            this.sendCommand(command.content);
+            this.sendSnackbar(SnackbarMessage.Success.CommandTriggered(command.name));
           }
-        }
-      });
-
-      this.scanBuffer = "";
+        });
     }
   },
 }
