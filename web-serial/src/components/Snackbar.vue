@@ -4,7 +4,6 @@
     v-model="isOn"
     v-if="content"
     :color="content.color"
-    :timeout="content.timeout"
   >
     {{ content.content }}
     <v-btn
@@ -20,36 +19,30 @@
 </template>
 
 <script>
+import CallbackScheduler from "../utils/classes/CallbackScheduler";
+
 export default {
   name: "Snackbar",
 
   data: () => ({
     isOn: false,
     content: null,
-    closeTimeout: null,
+    closeScheduler: null,
   }),
+
+  mounted() {
+    this.closeScheduler = new CallbackScheduler(this.close.bind(this));
+  },
 
   methods: {
     setMessage(msg) {
-      if (this.isOn) {
-        this.close();
-      }
+      this.closeScheduler.schedule(msg.timeout);
 
       this.isOn = true;
       this.content = msg;
-
-      if (msg.timeout !== -1) {
-        this.closeTimeout = setTimeout(() => {
-          this.close();
-        }, msg.timeout);
-      }
     },
 
     close() {
-      if (this.closeTimeout) {
-        clearTimeout(this.closeTimeout);
-        this.closeTimeout = null;
-      }
       this.isOn = false;
       this.content = null;
     }
