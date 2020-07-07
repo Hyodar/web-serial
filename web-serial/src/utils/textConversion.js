@@ -16,12 +16,12 @@ const knownAsciiCodes = Object.freeze([
     "FS", "GS", "RS", "US"
 ]);
 
-const additionalSuffix = Object.freeze({
-    "LF": "<br>",
+const knownAsciiCodesSuffixes = Object.freeze({
+    "LF": "\n"
 });
 
 const htmlMarkedKnownAsciiCodes = Object.freeze(knownAsciiCodes.map(el => {
-    return `<span style="color: yellow">&lt;${el}&gt;</span>${additionalSuffix[el] || ""}`;
+    return `<${el}>${knownAsciiCodesSuffixes[el] || ""}`;
 }));
 
 function knownAsciiCodeOrSquare(chr) {

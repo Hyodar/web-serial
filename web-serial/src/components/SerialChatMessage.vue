@@ -18,8 +18,9 @@
         </div>
         <v-card-text
           class="pa-0 pd-1 pl-2 mt-0 offwhite-text"
-          v-html="regexMarkedContent"
-        ></v-card-text>
+        >
+          <span v-for="(marked, idx) in marks" :key="idx" :style="`background-color: ${marked.color}; white-space: pre;`">{{ marked.content }}</span>
+        </v-card-text>
       </v-card>
       <div style="height: 10px;"></div>
     </div>
@@ -29,7 +30,10 @@
       style="font-family: monospace;"
     >
       <span :class="[colors[author]]" style="border-radius: 5px;">>></span>
-      {{ time }} - <span v-html="regexMarkedContent"></span>
+      {{ time }} -
+      <span>
+        <span v-for="(marked, idx) in marks" :key="idx" :style="`background-color: ${marked.color}; white-space: pre;`">{{ marked.content }}</span>
+      </span>
     </div>
   </div>
 </template>
@@ -69,20 +73,41 @@ export default {
   data: () => ({
     colors: MessageColor,
     LogMode: LogMode,
-    showButton: false
+    showButton: false,
+    marks: []
   }),
 
   computed: {
-    regexMarkedContent: function() {
-      return new UnionReplacer(this.expressions, unionReplacerFlags).replace(this.content);
+    bindedExpressions: function() {
+      const a = this.expressions.map(el => [el[0], el[1].bind(null, this.addMarked.bind(this))]);
+      return a;
     },
-
     rawContent: function() {
       if (this.displayFunction === charOrSquare) {
         return this.content;
       }
       return strToBase(this.content, this.displayFunction);
     }
+  },
+
+  mounted() {
+    this.marks = [];
+    new UnionReplacer(this.bindedExpressions, unionReplacerFlags).replace(this.content);
+  },
+
+  watch: {
+    displayFunction() {
+      this.marks = [];
+      new UnionReplacer(this.bindedExpressions, unionReplacerFlags).replace(this.content);
+    },
+    bindedExpressions() {
+      this.marks = [];
+      new UnionReplacer(this.bindedExpressions, unionReplacerFlags).replace(this.content);
+    },
+    content() {
+      this.marks = [];
+      new UnionReplacer(this.bindedExpressions, unionReplacerFlags).replace(this.content);
+    },
   },
 
   methods: {
@@ -98,6 +123,14 @@ export default {
       document.execCommand("copy");
 
       temp.remove();
+    },
+
+    addMarked(color, content) {
+      if (this.marks.length && color === this.marks[this.marks.length - 1].color) {
+        this.marks[this.marks.length - 1].content += content;
+        return;
+      }
+      this.marks.push({ color: color, content: content });
     }
   }
 };

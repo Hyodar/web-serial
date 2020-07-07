@@ -51,7 +51,7 @@
                 </template>
                 <v-card>
                   <v-card-text class="pa-0">
-                    <v-color-picker v-model="item.color" flat />
+                    <v-color-picker :value="item.color" @input="updateColor(item, $event)" flat />
                   </v-card-text>
                 </v-card>
               </v-menu>
@@ -162,8 +162,9 @@ export default {
       this.$refs.expressionEditor.openDialog(expression);
     },
 
-    openInfo() {
-
+    updateColor(expression, color) {
+      expression.color = color;
+      this.$set(this.value, this.value.indexOf(expression), Object.assign({}, expression));
     }
   },
 }

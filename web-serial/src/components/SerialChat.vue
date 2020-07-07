@@ -104,11 +104,17 @@ export default {
         .map(el => {
           return [
             el.expression,
-            match => `<span style="background-color: ${el.color}">${strToBase(match, this.displayFunction)}</span>`
+            (addMarked, match) => {
+              addMarked(el.color, strToBase(match, this.displayFunction));
+              return "";
+            }
           ]
         });
 
-      unionReplacerExpressions.push([/[\s\S]/gm, match => strToBase(match, this.displayFunction)]);
+      unionReplacerExpressions.push([/[\s\S]/gm, (addMarked, match) => {
+        addMarked("transparent", strToBase(match, this.displayFunction));
+        return "";
+      }]);
 
       return unionReplacerExpressions;
     },
