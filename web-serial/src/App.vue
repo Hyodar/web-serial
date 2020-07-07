@@ -66,6 +66,12 @@
 <style>
 .swal-modal {
   font-family: Roboto;
+  background: linear-gradient(#282828, #303030);
+}
+
+.swal-title,
+.swal-text {
+  color: #ffffff;
 }
 </style>
 
