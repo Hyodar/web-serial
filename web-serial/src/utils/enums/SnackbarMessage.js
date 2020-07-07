@@ -1,18 +1,5 @@
 const SnackbarMessage = Object.freeze({
   Error: {
-    NoWebSerial: {
-      color: "error",
-      content: "Your browser doesn't seem to have the WebSerial API enabled. Please check if your browser supports it. The 'enable' button will lead you to the instructions to activate it on Chrome.",
-      buttons: [
-        {
-          text: "Enable",
-          callback: () => {
-            window.location.href = "https://codelabs.developers.google.com/codelabs/web-serial/#2";
-          }
-        }
-      ],
-      timeout: -1
-    },
     NoTextDecoderStream: {
       color: "error",
       content: "Your browser doesn't seem to have the TextDecoderStream class. Maybe check on its documentation?",

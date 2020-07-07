@@ -63,6 +63,12 @@
   </v-app>
 </template>
 
+<style>
+.swal-modal {
+  font-family: Roboto;
+}
+</style>
+
 <script>
 import SerialOptions from "./components/navigationDrawer/SerialOptions";
 import LogModeOptions from "./components/navigationDrawer/LogModeOptions";
@@ -81,6 +87,7 @@ import DisplayMode from "./utils/enums/DisplayMode";
 import LogMode from "./utils/enums/LogMode";
 
 import unescapeJs from "unescape-js";
+import swal from "sweetalert";
 
 export default {
   name: "App",
@@ -104,7 +111,7 @@ export default {
     catch (e) {
       switch(e) {
         case BrowserSerial.Error.NoWebSerial:
-          this.setSnackbarMessage(SnackbarMessage.Error.NoWebSerial);
+          this.noWebSerialAlert();
           return;
         case BrowserSerial.Error.NoTextDecoderStream:
           this.setSnackbarMessage(SnackbarMessage.Error.NoTextDecoderStream);
@@ -154,6 +161,21 @@ export default {
       if (from === "serial" && !isCommand) {
         this.$refs.commandList.addToScanBuffer(messageContent);
       }
+    },
+
+    noWebSerialAlert() {
+      swal({
+        title: "Error!",
+        text: "Your browser doesn't seem to have the WebSerialAPI enabled. Please check if it supports it.\nThe 'enable' button will lead you to instructions to activate it on Chrome/Chromium.",
+        icon: "error",
+        buttons: ["Enable", "Continue Anyway"],
+        dangerMode: true
+      })
+      .then(pressedButton => {
+        if (!pressedButton) {
+          window.location.href = "https://codelabs.developers.google.com/codelabs/web-serial/#2";
+        }
+      });
     },
 
     setSnackbarMessage(snackbarMessage) {
