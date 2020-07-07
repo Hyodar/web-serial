@@ -175,7 +175,9 @@ export default {
         text: "Your browser doesn't seem to have the WebSerialAPI enabled. Please check if it supports it.\nThe 'enable' button will lead you to instructions to activate it on Chrome/Chromium.",
         icon: "error",
         buttons: ["Enable", "Continue Anyway"],
-        dangerMode: true
+        dangerMode: true,
+        closeOnClickOutside: false,
+        closeOnEsc: false
       })
       .then(pressedButton => {
         if (!pressedButton) {
