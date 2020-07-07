@@ -29,10 +29,11 @@
       :id="`msg-${id}`"
       style="font-family: monospace;"
     >
-      <span :class="[colors[author]]" style="border-radius: 5px;">>></span>
-      {{ time }} -
+      <span :class="[colors[author]]">>></span>
+      === {{ time }} ===
+      <br />
       <span>
-        <span v-for="(marked, idx) in marks" :key="idx" :style="`background-color: ${marked.color}; white-space: pre;`">{{ marked.content }}</span>
+        <span v-for="(marked, idx) in marks" :key="idx" :style="`background-color: ${marked.color}; white-space: pre;`">{{marked.content}}</span>
       </span>
     </div>
   </div>
