@@ -25,7 +25,11 @@
       </v-btn>
     </template>
 
-    <CommandEditor ref="commandEditor" v-on:snackbar="sendSnackbar($event)"/>
+    <CommandEditor
+      ref="commandEditor"
+      v-on:snackbar="sendSnackbar($event)"
+      v-on:command-changed="commandChanged"
+    />
 
     <v-card class="grey darken-3" style="height: 300px; width: 100%;" v-bar>
       <v-list>
@@ -83,12 +87,16 @@ export default {
         name: `Command ${this.commandCount++}`,
         content: "",
         sequence: null,
-        scanCursor: 0,
+        scanCursor: this.scanBuffer.length,
       });
     },
 
     openCommandEditor(command) {
       this.$refs.commandEditor.openDialog(command);
+    },
+
+    commandChanged(command) {
+      command.scanCursor = this.scanBuffer.length;
     },
 
     sendCommand(command) {
@@ -100,8 +108,13 @@ export default {
     addToScanBuffer(chunk) {
       this.scanBuffer += chunk;
 
-      if (this.scanBuffer.length > this.scanBufferSize) {
-        this.scanBuffer = this.scanBuffer.slice(this.scanBuffer.length - this.scanBufferSize);
+      const overflow = this.scanBuffer.length - this.scanBufferSize;
+      if (overflow > 0) {
+        this.scanBuffer = this.scanBuffer.slice(overflow);
+
+        this.value.forEach(command => {
+          command.scanCursor = Math.max(command.scanCursor - overflow, 0);
+        });
       }
 
       this.checkMatches();

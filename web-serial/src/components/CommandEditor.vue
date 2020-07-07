@@ -66,6 +66,9 @@ export default {
         this.sequenceField = this.command.sequence
           .toString()
           .slice(1, -(1 + unionReplacerFlags.length));
+
+        // prevent the previous sequence from being matched while the editor is opened
+        this.command.sequence = null;
       }
       else {
         this.sequenceField = "";
@@ -86,6 +89,7 @@ export default {
           }
 
           this.command.sequence = new RegExp(this.sequenceField, unionReplacerFlags);
+          this.$emit("command-changed", this.command);
         }
         catch {
           this.$emit("snackbar", SnackbarMessage.Error.InvalidRegExp);
