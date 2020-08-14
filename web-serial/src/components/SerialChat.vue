@@ -12,7 +12,6 @@
       >
         <template v-slot="{ item, index, active }">
           <DynamicScrollerItem
-            
             :item="item"
             :active="active"
             :data-active="active"
@@ -215,7 +214,7 @@ export default {
 
     scrollerUpdate(startIdx, endIdx) {
       this.lastScrollMessageIndex = endIdx;
-    }
+    },
   }
 };
 </script>
