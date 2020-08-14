@@ -15,6 +15,16 @@
             </v-col>
           </v-row>
         </v-container>
+
+        <label>Color Target</label>
+        <HorizontalSelection 
+          :options="[
+            { name: 'Background', val: 'background-color' },
+            { name: 'Text', val: 'color' }
+          ]"
+          :value="expression.colorTarget"
+          v-on:changedValue="expression.colorTarget = $event"
+        />
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -29,15 +39,21 @@
 import { maybeSlashEnclosed } from "../utils/textRegex";
 import { noMatchRegexString } from "../utils/textRegex";
 import SnackbarMessage from "../utils/enums/SnackbarMessage";
+import HorizontalSelection from "./HorizontalSelection";
 
 export default {
   name: "ExpressionEditor",
+  
+  components: {
+    HorizontalSelection,
+  },
 
   data: () => ({
     dialog: false,
     expression: {
       name: "",
       expression: "",
+      colorTarget: "",
     },
     expressionField: "",
   }),

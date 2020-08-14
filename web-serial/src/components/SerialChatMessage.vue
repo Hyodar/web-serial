@@ -19,7 +19,7 @@
         <v-card-text
           class="pa-0 pd-1 pl-2 mt-0 offwhite-text"
         >
-          <span v-for="(marked, idx) in marks" :key="idx" :style="`background-color: ${marked.color}; white-space: pre-wrap;`">{{ marked.content }}</span>
+          <span v-for="(marked, idx) in marks" :key="idx" :style="`${marked.colorStyle}; white-space: pre-wrap; font-weight: 700;`">{{ marked.content }}</span>
         </v-card-text>
       </v-card>
       <div style="height: 10px;"></div>
@@ -30,10 +30,10 @@
       style="font-family: monospace;"
     >
       <span :class="[colors[author]]">>></span>
-      === {{ time }} ===
+      {{ time }}
       <br />
       <span>
-        <span v-for="(marked, idx) in marks" :key="idx" :style="`background-color: ${marked.color}; white-space: pre-wrap;`">{{ marked.content }}</span>
+        <span v-for="(marked, idx) in marks" :key="idx" :style="`${marked.colorStyle}; white-space: pre-wrap; font-weight: 700;`">{{ marked.content }}</span>
       </span>
     </div>
   </div>
@@ -126,12 +126,12 @@ export default {
       temp.remove();
     },
 
-    addMarked(color, content) {
-      if (this.marks.length && color === this.marks[this.marks.length - 1].color) {
+    addMarked(colorStyle, content) {
+      if (this.marks.length && colorStyle === this.marks[this.marks.length - 1].colorStyle) {
         this.marks[this.marks.length - 1].content += content;
         return;
       }
-      this.marks.push({ color: color, content: content });
+      this.marks.push({ colorStyle: colorStyle, content: content });
     }
   }
 };

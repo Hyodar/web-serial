@@ -153,8 +153,9 @@ export default {
         name: `Expression ${this.expressionCount++}`,
         active: false,
         expression: new RegExp(noMatchRegexString, ""),
-        color: "#ffffff",
-        colorEdit: false
+        color: "#000000",
+        colorEdit: false,
+        colorTarget: "background-color",
       });
     },
 

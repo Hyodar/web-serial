@@ -101,17 +101,21 @@ export default {
       const unionReplacerExpressions = this.expressions
         .filter(el => el.active)
         .map(el => {
+          const colorStyle = `${el.colorTarget}: ${el.color}`;
           return [
             el.expression,
             (addMarked, match) => {
-              addMarked(el.color, strToBase(match, this.displayFunction));
+              addMarked(
+                colorStyle,
+                strToBase(match, this.displayFunction)
+              );
               return "";
             }
           ]
         });
 
       unionReplacerExpressions.push([/[\s\S]/gm, (addMarked, match) => {
-        addMarked("transparent", strToBase(match, this.displayFunction));
+        addMarked("", strToBase(match, this.displayFunction));
         return "";
       }]);
 
