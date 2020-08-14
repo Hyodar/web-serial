@@ -1,6 +1,6 @@
-const MessageColor = Object.freeze({
+const MessageColor = {
     self: "primary",
     serial: "secondary",
-});
+};
 
 export default MessageColor;

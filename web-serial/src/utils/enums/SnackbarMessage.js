@@ -1,4 +1,4 @@
-const SnackbarMessage = Object.freeze({
+const SnackbarMessage = {
   Error: {
     NoTextDecoderStream: {
       color: "error",
@@ -60,6 +60,6 @@ const SnackbarMessage = Object.freeze({
       timeout: 5000
     }
   }
-});
+};
 
 export default SnackbarMessage;
