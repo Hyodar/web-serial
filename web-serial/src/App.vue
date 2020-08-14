@@ -160,7 +160,7 @@ export default {
     sendMessage(messageContent, from="self", isCommand=false) {
       this.$refs.chat.addEntry(messageContent, from);
 
-      if (this.browserSerial) {
+      if (this.browserSerial && from === "self") {
         this.browserSerial.write(messageContent);
       }
 
