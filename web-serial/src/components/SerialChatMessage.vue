@@ -19,7 +19,7 @@
         <v-card-text
           class="pa-0 pd-1 pl-2 mt-0 offwhite-text"
         >
-          <span v-for="(marked, idx) in marks" :key="idx" :style="`background-color: ${marked.color}; white-space: pre;`">{{ marked.content }}</span>
+          <span v-for="(marked, idx) in marks" :key="idx" :style="`background-color: ${marked.color}; white-space: pre-wrap;`">{{ marked.content }}</span>
         </v-card-text>
       </v-card>
       <div style="height: 10px;"></div>
@@ -33,7 +33,7 @@
       === {{ time }} ===
       <br />
       <span>
-        <span v-for="(marked, idx) in marks" :key="idx" :style="`background-color: ${marked.color}; white-space: pre;`">{{marked.content}}</span>
+        <span v-for="(marked, idx) in marks" :key="idx" :style="`background-color: ${marked.color}; white-space: pre-wrap;`">{{ marked.content }}</span>
       </span>
     </div>
   </div>
