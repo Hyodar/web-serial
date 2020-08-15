@@ -1,6 +1,9 @@
+import MessageAuthor from "./MessageAuthor";
+
 const MessageColor = {
-    self: "primary",
-    serial: "secondary",
+    [MessageAuthor.SELF]: "primary",
+    [MessageAuthor.SERIAL]: "secondary",
+    [MessageAuthor.COMMAND]: "teal",
 };
 
 export default MessageColor;
