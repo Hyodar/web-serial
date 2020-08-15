@@ -75,13 +75,15 @@ import { charToHex } from "../utils/textConversion";
 import { charToBinary } from "../utils/textConversion";
 import { strToBase } from "../utils/textConversion";
 
+import MessageAuthor from "../utils/enums/MessageAuthor";
+
 export default {
   name: "SerialChat",
 
   props: ["logMode", "displayMode", "messageBufferSize", "expressions"],
 
   components: {
-    SerialChatMessage
+    SerialChatMessage,
   },
 
   data: () => ({
@@ -89,9 +91,10 @@ export default {
     msgIdCount: 0,
     lastScrollPosition: 0,
     lastScrollMessageIndex: 0,
-    lastSentMessage: {
-      "self": { index: 0, id: 0, time: 0 },
-      "serial": { index: 0, id: 0, time: 0 }
+    authorLastMessage: {
+      [MessageAuthor.SELF]: { index: 0, id: 0, time: 0 },
+      [MessageAuthor.SERIAL]: { index: 0, id: 0, time: 0 },
+      [MessageAuthor.COMMAND]: { index: 0, id: 0, time: -Infinity },
     },
     testing: false,
   }),
@@ -141,6 +144,10 @@ export default {
       else {
         return "#000000b0";
       }
+    },
+    
+    lastSentMessage() {
+      return this.messages[this.messages.length - 1] || {};
     }
   },
 
@@ -157,15 +164,14 @@ export default {
 
   methods: {
     addEntry(msg, author) {
-      const elapsedTime = Date.now() - this.lastSentMessage[author].time;
-      const lastMessage = this.lastSentMessage[author];
+      const lastMessage = this.authorLastMessage[author];
       let shouldScrollToBottom = false;
 
       const scrollerEl = this.$refs.scroller.$refs.scroller.$el;
       const scrollerBottom = scrollerEl.scrollTop + scrollerEl.offsetHeight;
       shouldScrollToBottom = (scrollerEl.scrollHeight - scrollerBottom <= 50);
 
-      if (elapsedTime < 500) {
+      if (this.shouldAppendToLastMessage(author)) {
         const index = this.messageIndexSearch(lastMessage.id, lastMessage.index);
         this.messages[index].content += msg;
         lastMessage.time = Date.now();
@@ -182,16 +188,24 @@ export default {
           this.messages.shift();
         }
 
-        this.lastSentMessage[author] = {
-          id: this.msgIdCount - 1,
-          index: this.messages.length - 1,
-          time: Date.now()
-        };
+        if (author !== MessageAuthor.COMMAND) {
+          this.authorLastMessage[author] = {
+            id: this.msgIdCount - 1,
+            index: this.messages.length - 1,
+            time: Date.now(),
+          };
+        }
       }
 
       if (shouldScrollToBottom) {
         setTimeout(this.scrollToBottom.bind(this), 100);
       }
+    },
+
+    shouldAppendToLastMessage(author) {
+      const elapsedTime = Date.now() - this.authorLastMessage[author].time;
+
+      return elapsedTime < 400 && this.lastSentMessage.author === author;
     },
 
     scrollToBottom() {
