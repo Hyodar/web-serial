@@ -73,6 +73,10 @@
 .swal-text {
   color: #ffffff;
 }
+
+html {
+  overflow: auto;
+}
 </style>
 
 <script>
@@ -91,6 +95,7 @@ import BrowserSerial from "./utils/classes/BrowserSerial";
 import SnackbarMessage from "./utils/enums/SnackbarMessage";
 import DisplayMode from "./utils/enums/DisplayMode";
 import LogMode from "./utils/enums/LogMode";
+import MessageAuthor from "./utils/enums/MessageAuthor";
 
 import unescapeJs from "unescape-js";
 import swal from "sweetalert";
@@ -157,14 +162,15 @@ export default {
   }),
 
   methods: {
-    sendMessage(messageContent, from="self", isCommand=false) {
+    sendMessage(messageContent, from=MessageAuthor.SELF) {
       this.$refs.chat.addEntry(messageContent, from);
 
-      if (this.browserSerial && from === "self") {
-        this.browserSerial.write(messageContent);
+      if (from === MessageAuthor.SELF || from === MessageAuthor.COMMAND) {
+        if (this.browserSerial) {
+          this.browserSerial.write(messageContent);
+        }
       }
-
-      if (from === "serial" && !isCommand) {
+      else {
         this.$refs.commandList.addToScanBuffer(messageContent);
       }
     },
@@ -198,7 +204,7 @@ export default {
       this.browserSerial = new BrowserSerial({
         decodeFrom: "ascii",
         readLoopCallback: chunk => {
-          this.sendMessage(chunk, "serial");
+          this.sendMessage(chunk, MessageAuthor.SERIAL);
         }
       });
 
@@ -238,7 +244,7 @@ export default {
     },
 
     sendCommand(content) {
-      this.sendMessage(unescapeJs(content), "self", true);
+      this.sendMessage(unescapeJs(content), MessageAuthor.COMMAND, true);
     }
   }
 };
