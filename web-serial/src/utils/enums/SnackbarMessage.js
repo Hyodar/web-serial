@@ -57,7 +57,7 @@ const SnackbarMessage = {
     NoRegexSlashes: {
       color: "warning",
       content: "Hmm... Did you write your regex with '/' and flags? Those will be treated as actual characters, as you only need to write the regex content. The default flags are 'gms'.",
-      timeout: 5000
+      timeout: 7000
     }
   }
 };
