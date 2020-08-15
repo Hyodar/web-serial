@@ -7,7 +7,7 @@
       <v-card
         :id="`msg-${id}`"
         dense
-        :color="colors[author]"
+        :color="color"
         :elevation="2"
         style="font-family: monospace; min-height: 42px;"
       >
@@ -29,7 +29,7 @@
       :id="`msg-${id}`"
       style="font-family: monospace;"
     >
-      <span :class="[colors[author]]">>></span>
+      <span>{{ sentOrReceived }}</span>
       {{ time }}
       <br />
       <span>
@@ -62,6 +62,7 @@ import { charOrSquare } from "../utils/textConversion";
 import { unionReplacerFlags } from "../utils/textRegex";
 
 import MessageColor from "../utils/enums/MessageColor";
+import MessageFlow from "../utils/enums/MessageFlow";
 import LogMode from "../utils/enums/LogMode";
 
 import UnionReplacer from "union-replacer";
@@ -72,7 +73,6 @@ export default {
   props: ["id", "content", "time", "author", "logMode", "expressions", "displayFunction"],
 
   data: () => ({
-    colors: MessageColor,
     LogMode: LogMode,
     showButton: false,
     marks: []
@@ -88,7 +88,13 @@ export default {
         return this.content;
       }
       return strToBase(this.content, this.displayFunction);
-    }
+    },
+    sentOrReceived: function() {
+      return MessageFlow[this.author];
+    },
+    color: function() {
+      return MessageColor[this.author];
+    },
   },
 
   mounted() {
