@@ -59,7 +59,8 @@
 import InfoDialog from "../InfoDialog";
 import CommandEditor from "../CommandEditor";
 import NavigationDrawerRow from "./NavigationDrawerRow";
-import SnackbarMessage from '../../utils/enums/SnackbarMessage';
+import SnackbarMessage from "../../utils/enums/SnackbarMessage";
+import throttle from "lodash/throttle";
 
 export default {
   name: "CommandList",
@@ -113,22 +114,24 @@ export default {
         this.scanBuffer = this.scanBuffer.slice(overflow);
 
         this.value.forEach(command => {
-          command.scanCursor = Math.max(command.scanCursor - overflow, 0);
+          command.scanCursor -= overflow;
         });
       }
 
       this.checkMatches();
     },
 
-    checkMatches() {
+    checkMatches: throttle(function () {
       if (!this.scanBuffer) {
         return;
       }
 
+      const commandContents = [];
+
       this.value.filter(command => command.sequence)
         .forEach(command => {
           const initialScanCursor = command.scanCursor;
-          const substr = this.scanBuffer.slice(initialScanCursor);
+          const substr = this.scanBuffer.slice(initialScanCursor, this.scanBuffer.length);
           const matches = substr.matchAll(command.sequence);
 
           for (const match of matches) {
@@ -139,11 +142,16 @@ export default {
               initialScanCursor + match.index + match[0].length
             );
 
-            this.sendCommand(command.content);
+            commandContents.push(command.content);
+            // this.sendCommand(command.content);
             this.sendSnackbar(SnackbarMessage.Success.CommandTriggered(command.name));
           }
         });
-    }
+      
+      if (commandContents.length) {
+        this.sendCommand(commandContents.join(""));
+      }
+    }, 250)
   },
 }
 </script>
