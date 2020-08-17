@@ -1,6 +1,11 @@
 <template>
   <v-container id="chatContainer">
     <v-card outlined :style="{'backgroundColor': chatBackgroundColor, 'transition': '0.2s ease-in-out background-color'}">
+      <div class="d-flex flex-row-reverse" :style="{'backgroundColor': headerBackgroundColor}">
+        <v-btn icon color="grey" @click="clear">
+          <v-icon>mdi-delete</v-icon>
+        </v-btn>
+      </div>
       <DynamicScroller
         ref="scroller"
         :items="messages"
@@ -144,8 +149,17 @@ export default {
         return "#000000b0";
       }
     },
+
+    headerBackgroundColor: function() {
+      if (this.logMode === LogMode.CHAT) {
+        return "#00000022";
+      }
+      else {
+        return "#ffffff11";
+      }
+    },
     
-    lastSentMessage() {
+    lastSentMessage: function() {
       return this.messages[this.messages.length - 1] || {};
     },
   },
@@ -231,6 +245,11 @@ export default {
 
     scrollerUpdate(startIdx, endIdx) {
       this.lastScrollMessageIndex = endIdx;
+    },
+
+    clear() {
+      Object.assign(this.$data, this.$options.data.apply(this));
+      this.$emit("clear");
     },
   }
 };

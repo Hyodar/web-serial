@@ -121,6 +121,13 @@ export default {
       this.checkMatches();
     },
 
+    resetScanBuffer() {
+      this.value.forEach(command => {
+        command.scanCursor = 0;
+      });
+      this.scanBuffer = "";
+    },
+
     checkMatches: throttle(function () {
       if (!this.scanBuffer) {
         return;

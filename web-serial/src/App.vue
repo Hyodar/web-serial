@@ -57,6 +57,7 @@
         :displayMode="userOptions.displayMode"
         :expressions="userOptions.expressions"
         :messageBufferSize="500"
+        v-on:clear="onChatCleared"
       />
       <SerialInput v-on:sendMessage="sendMessage" />
     </v-main>
@@ -245,6 +246,10 @@ export default {
 
     sendCommand(content) {
       this.sendMessage(unescapeJs(content), MessageAuthor.COMMAND, true);
+    },
+
+    onChatCleared() {
+      this.$refs.commandList.resetScanBuffer();
     }
   }
 };
