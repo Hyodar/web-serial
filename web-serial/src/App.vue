@@ -125,13 +125,11 @@ export default {
         case BrowserSerial.Error.NoWebSerial:
           this.noWebSerialAlert();
           return;
-        case BrowserSerial.Error.NoTextDecoderStream:
+        case BrowserSerial.Error.NoTransformStream:
           this.setSnackbarMessage(SnackbarMessage.Error.NoTextDecoderStream);
           return;
-        case BrowserSerial.Error.NoTextEncoderStream:
-          this.setSnackbarMessage(SnackbarMessage.Error.NoTextEncoderStream);
-          return;
       }
+      throw e;
     }
   },
 

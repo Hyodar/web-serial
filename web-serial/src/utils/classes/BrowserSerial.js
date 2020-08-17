@@ -1,15 +1,45 @@
 
+import iconv from "iconv-lite";
+
+if (!window.TransformStream) {
+    const TransformStreamPlaceholder = function() {};
+    window.TransformStream = TransformStreamPlaceholder;
+}
+
+class IconvEncoderStream extends window.TransformStream {
+    constructor(options) {
+        super({
+            start() {
+                this.options = options;
+            },
+            transform(chunk, controller) {
+                controller.enqueue(iconv.encode(chunk, this.options.encoding));
+            }
+        });
+    }
+}
+
+class IconvDecoderStream extends window.TransformStream {
+    constructor(options) {
+        super({
+            start() {
+                this.options = options;
+            },
+            transform(chunk, controller) {
+                controller.enqueue(iconv.decode(chunk, this.options.encoding));
+            }
+        });
+    }
+}
+
 class BrowserSerial {
 
     static Error = Object.freeze({
         NoWebSerial: new Error(
             "This browser doesn't support or hasn't enabled the WebSerialAPI."
         ),
-        NoTextEncoderStream: new Error(
-            "This browser doesn't have the TextEncoderStream class. There's a way to polyfill it: https://developer.mozilla.org/en-US/docs/Web/API/TransformStream#Polyfilling_TextEncoderStream_and_TextDecoderStream"
-        ),
-        NoTextDecoderStream: new Error(
-            "This browser doesn't have the TextDecoderStream class. There's a way to polyfill it: https://developer.mozilla.org/en-US/docs/Web/API/TransformStream#Polyfilling_TextEncoderStream_and_TextDecoderStream"
+        NoTransformStream: new Error(
+            "This browser doesn't support the Streams API "
         ),
         NoPortLoaded: new Error(
             "There was not port loaded."
@@ -42,7 +72,8 @@ class BrowserSerial {
 
         this.options = {
             decodeFrom: "ascii",
-            readLoopCallback: null
+            encodeTo: "ascii",
+            readLoopCallback: null,
         };
         this.loadOptions(options);
     }
@@ -73,13 +104,8 @@ class BrowserSerial {
         if (!("serial" in navigator)) {
             throw BrowserSerial.Error.NoWebSerial;
         }
-
-        if (!("TextEncoderStream" in window)) {
-            throw BrowserSerial.Error.NoTextEncoderStream;
-        }
-
-        if (!("TextDecoderStream" in window)) {
-            throw BrowserSerial.Error.NoTextDecoderStream;
+        if (!window.TransformStream) {
+            throw BrowserSerial.Error.NoTransformStream;
         }
     }
 
@@ -109,7 +135,12 @@ class BrowserSerial {
     }
 
     initializeReader() {
-        this.decoder = new window.TextDecoderStream(this.options.decodeFrom);
+        const options = this.options;
+        this.decoder = new IconvDecoderStream({
+            get encoding() {
+                return options.decodeFrom;
+            }
+        });
 
         this.serialReaderClosed = this.serialPort.readable
             .pipeTo(this.decoder.writable);
@@ -122,7 +153,13 @@ class BrowserSerial {
     }
 
     initializeWriter() {
-        this.encoder = new window.TextEncoderStream();
+        const options = this.options;
+        this.encoder = new IconvEncoderStream({
+            get encoding() {
+                return options.encodeTo;
+            }
+        });
+
         this.serialWriterClosed = this.encoder.readable
             .pipeTo(this.serialPort.writable);
 
