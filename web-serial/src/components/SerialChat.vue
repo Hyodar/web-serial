@@ -96,7 +96,6 @@ export default {
       [MessageAuthor.SERIAL]: { index: 0, id: 0, time: 0 },
       [MessageAuthor.COMMAND]: { index: 0, id: 0, time: -Infinity },
     },
-    testing: false,
   }),
 
   computed: {
@@ -148,7 +147,7 @@ export default {
     
     lastSentMessage() {
       return this.messages[this.messages.length - 1] || {};
-    }
+    },
   },
 
   watch: {
