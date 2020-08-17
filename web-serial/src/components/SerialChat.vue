@@ -5,6 +5,21 @@
         <v-btn icon color="grey" @click="clear">
           <v-icon>mdi-delete</v-icon>
         </v-btn>
+        <v-menu offset-y>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn icon color="grey" v-bind="attrs" v-on="on">
+              <v-icon>mdi-download</v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item @click="downloadLog('json')">
+              <v-list-item-title>JSON</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="downloadLog('plain text')">
+              <v-list-item-title>Plain text</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </div>
       <DynamicScroller
         ref="scroller"
@@ -74,11 +89,13 @@ import SerialChatMessage from "./SerialChatMessage";
 
 import DisplayMode from "../utils/enums/DisplayMode";
 import LogMode from "../utils/enums/LogMode";
+import MessageFlow from "../utils/enums/MessageFlow";
 
 import { charOrSquare } from "../utils/textConversion";
 import { charToHex } from "../utils/textConversion";
 import { charToBinary } from "../utils/textConversion";
 import { strToBase } from "../utils/textConversion";
+import downloadAsFile from "../utils/downloadAsFile";
 
 import MessageAuthor from "../utils/enums/MessageAuthor";
 
@@ -250,6 +267,34 @@ export default {
     clear() {
       Object.assign(this.$data, this.$options.data.apply(this));
       this.$emit("clear");
+    },
+
+    downloadLog(downloadAs) {
+      const parseMessageContent = (msg) => {
+        if (this.displayFunction === charOrSquare) {
+          return msg.content;
+        }
+        return strToBase(msg.content, this.displayFunction);
+      }
+
+      if (downloadAs === "json") {
+        const content = this.messages.map(msg => ({
+          type: MessageFlow[msg.author].toUpperCase(),
+          date: msg.time.slice(1, msg.time.length - 1).split(" - "),
+          content: parseMessageContent(msg),
+        }));
+        const json = JSON.stringify(content);
+
+        downloadAsFile(json, "log.json", "application/json");
+      }
+      else {
+        const content = this.messages.map(msg => {
+          return `${MessageFlow[msg.author].toUpperCase()} ${msg.time}\n${parseMessageContent(msg)}\n\n`;
+        }).join("");
+
+        downloadAsFile(content, "log.txt", "text/plain");
+      }
+      
     },
   }
 };
