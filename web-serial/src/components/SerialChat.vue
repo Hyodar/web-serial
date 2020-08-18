@@ -15,7 +15,10 @@
             <v-list-item @click="downloadLog('json')">
               <v-list-item-title>JSON</v-list-item-title>
             </v-list-item>
-            <v-list-item @click="downloadLog('plain text')">
+            <v-list-item @click="downloadLog('csv')">
+              <v-list-item-title>CSV</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="downloadLog('plainText')">
               <v-list-item-title>Plain text</v-list-item-title>
             </v-list-item>
           </v-list>
@@ -42,7 +45,7 @@
           >
             <SerialChatMessage
               :id="item.id"
-              :time="item.time"
+              :date="item.date"
               :content="item.content"
               :author="item.author"
               :logMode="logMode"
@@ -85,6 +88,8 @@
 </style>
 
 <script>
+import ObjectToCSV from "object-to-csv";
+
 import SerialChatMessage from "./SerialChatMessage";
 
 import DisplayMode from "../utils/enums/DisplayMode";
@@ -189,7 +194,7 @@ export default {
 
     displayMode: function() {
       this.$refs.scroller.forceUpdate(true);
-    }
+    },
   },
 
   methods: {
@@ -209,7 +214,7 @@ export default {
       else {
         this.messages.push({
           id: this.msgIdCount++,
-          time: this.getCurrentTime(),
+          date: Date.now(),
           content: msg,
           author: author
         });
@@ -242,12 +247,6 @@ export default {
       this.$refs.scroller.scrollToBottom();
     },
 
-    getCurrentTime() {
-      const date = new Date();
-
-      return `[${date.toLocaleDateString()} - ${date.toLocaleTimeString()}]`;
-    },
-
     scrollToCurrentMessage() {
       this.$refs.scroller.scrollToItem(this.lastScrollMessageIndex);
     },
@@ -277,25 +276,34 @@ export default {
         return strToBase(msg.content, this.displayFunction);
       }
 
+      const exportedMessages = this.messages.map(msg => ({
+        type: MessageFlow[msg.author].toUpperCase(),
+        date: new Date(msg.date).toISOString(),
+        content: parseMessageContent(msg),
+      }));
+
       if (downloadAs === "json") {
-        const content = this.messages.map(msg => ({
-          type: MessageFlow[msg.author].toUpperCase(),
-          date: msg.time.slice(1, msg.time.length - 1).split(" - "),
-          content: parseMessageContent(msg),
-        }));
-        const json = JSON.stringify(content);
+        const json = JSON.stringify(exportedMessages);
 
         downloadAsFile(json, "log.json", "application/json");
       }
-      else {
-        const content = this.messages.map(msg => {
-          return `${MessageFlow[msg.author].toUpperCase()} ${msg.time}\n${parseMessageContent(msg)}\n\n`;
-        }).join("");
+      else if (downloadAs === "csv") {
+        const csv = new ObjectToCSV({
+          keys: ["type", "date", "content"].map(key => ({ key, as: key })),
+          data: exportedMessages
+        }).getCSV();
 
-        downloadAsFile(content, "log.txt", "text/plain");
+        downloadAsFile(csv, "log.csv", "text/csv");
       }
-      
+      else {
+        const dividerLine = `\n${"-".repeat(79)}\n`;
+        const plainText = exportedMessages.map(msg => {
+          return `[${msg.type} - ${msg.date}]\n${msg.content}`
+        }).join(dividerLine);
+
+        downloadAsFile(plainText, "log.txt", "text/plain");        
+      }
     },
-  }
+  },
 };
 </script>

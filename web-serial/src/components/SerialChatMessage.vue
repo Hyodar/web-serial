@@ -13,7 +13,7 @@
       >
         <div>
           <v-card-subtitle class="ma-0 pa-2 pb-0 offwhite-text">
-            {{ time }}
+            {{ dateString }}
           </v-card-subtitle>
         </div>
         <v-card-text
@@ -30,7 +30,7 @@
       style="font-family: monospace;"
     >
       <span>{{ sentOrReceived }}</span>
-      {{ time }}
+      {{ dateString }}
       <br />
       <span>
         <span v-for="(marked, idx) in marks" :key="idx" :style="`${marked.colorStyle}; white-space: pre-wrap; font-weight: 700;`">{{ marked.content }}</span>
@@ -70,12 +70,12 @@ import UnionReplacer from "union-replacer";
 export default {
   name: "SerialChatMessage",
 
-  props: ["id", "content", "time", "author", "logMode", "expressions", "displayFunction"],
+  props: ["id", "content", "date", "author", "logMode", "expressions", "displayFunction"],
 
   data: () => ({
     LogMode: LogMode,
     showButton: false,
-    marks: []
+    marks: [],
   }),
 
   computed: {
@@ -94,6 +94,10 @@ export default {
     },
     color: function() {
       return MessageColor[this.author];
+    },
+    dateString: function() {
+      const dateObj = new Date(this.date);
+      return `[${dateObj.toLocaleDateString()} - ${dateObj.toLocaleTimeString()}.${dateObj.getMilliseconds()}]`;
     },
   },
 
@@ -138,7 +142,7 @@ export default {
         return;
       }
       this.marks.push({ colorStyle: colorStyle, content: content });
-    }
-  }
+    },
+  },
 };
 </script>

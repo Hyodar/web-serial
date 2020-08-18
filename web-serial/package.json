@@ -11,6 +11,7 @@
     "core-js": "^3.6.5",
     "iconv-lite": "^0.6.2",
     "lodash": "^4.17.20",
+    "object-to-csv": "^1.0.5",
     "sweetalert": "^2.1.2",
     "unescape-js": "^1.1.4",
     "union-replacer": "^2.0.1",
