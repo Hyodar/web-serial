@@ -16,5 +16,5 @@ export default {
   components: {
     NavigationDrawerRow,
   },
-}
+};
 </script>

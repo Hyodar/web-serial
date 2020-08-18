@@ -89,7 +89,7 @@ export default {
   },
 
   props: {
-    value: Object
+    value: Object,
   },
 
   data: () => ({

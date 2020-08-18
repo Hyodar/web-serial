@@ -5,7 +5,7 @@ function charToBase(chr, base, minLength=0) {
 
 const asciiPrintableRegex = /^[ -~]+$/;
 
-const knownAsciiCodes = Object.freeze([
+const knownAsciiCodes = [
     "NUL", "SOH", "STX", "ETX",
     "EOT", "ENQ", "ACK", "BEL",
     "BS", "HT", "LF", "VT",
@@ -13,8 +13,8 @@ const knownAsciiCodes = Object.freeze([
     "DLE", "DC1", "DC2", "DC3",
     "DC4", "NAK", "SYN", "ETB",
     "CAN", "EM", "SUB", "ESC",
-    "FS", "GS", "RS", "US"
-]);
+    "FS", "GS", "RS", "US",
+];
 
 const knownAsciiCodesSuffixes = Object.freeze({
     "LF": "\n"
@@ -36,4 +36,9 @@ function strToBase(str, baseConversionFunction) {
     return Array.from(str).map(baseConversionFunction).join("");
 }
 
-export { charOrSquare, charToHex, charToBinary, strToBase };
+export {
+    charOrSquare,
+    charToHex,
+    charToBinary,
+    strToBase,
+};

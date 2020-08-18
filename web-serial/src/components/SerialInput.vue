@@ -27,7 +27,7 @@ export default {
   name: "SerialInput",
 
   data: () => ({
-    message: ""
+    message: "",
   }),
 
   methods: {
@@ -36,7 +36,7 @@ export default {
         this.$emit("sendMessage", unescapeJs(this.message));
         this.message = "";
       }
-    }
-  }
+    },
+  },
 };
 </script>

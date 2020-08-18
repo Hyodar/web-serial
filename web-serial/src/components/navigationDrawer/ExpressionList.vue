@@ -140,7 +140,7 @@ export default {
   props: ["value"],
 
   data: () => ({
-    expressionCount: 0
+    expressionCount: 0,
   }),
 
   methods: {
@@ -166,7 +166,7 @@ export default {
     updateColor(expression, color) {
       expression.color = color;
       this.$set(this.value, this.value.indexOf(expression), Object.assign({}, expression));
-    }
+    },
   },
-}
+};
 </script>

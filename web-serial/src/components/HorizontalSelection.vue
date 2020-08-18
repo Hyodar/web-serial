@@ -49,7 +49,7 @@ export default {
         return this.activeValue && this.activeValue.indexOf(value) !== -1;
       }
       return this.value === value;
-    }
+    },
   },
 
   
@@ -60,7 +60,7 @@ export default {
 
     dense: function() {
       return this.$attrs.dense !== undefined;
-    }
-  }
-}
+    },
+  },
+};
 </script>

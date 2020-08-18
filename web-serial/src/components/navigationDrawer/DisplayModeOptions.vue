@@ -27,13 +27,13 @@ export default {
   data: () => ({
     options: Object.entries(DisplayMode).map(entry => ({
       name: entry[0], val: entry[1]
-    }))
+    })),
   }),
 
   methods: {
     updateValue(event) {
       this.$emit("input", event);
-    }
-  }
-}
+    },
+  },
+};
 </script>

@@ -13,4 +13,8 @@ function maybeSlashEnclosed(str) {
         && (str.length - lastSlashPos - 1) <= validFlags.length;
 }
 
-export { maybeSlashEnclosed, noMatchRegexString, unionReplacerFlags };
+export {
+    maybeSlashEnclosed,
+    noMatchRegexString,
+    unionReplacerFlags,
+};

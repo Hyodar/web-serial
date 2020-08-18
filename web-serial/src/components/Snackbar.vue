@@ -45,7 +45,7 @@ export default {
     close() {
       this.isOn = false;
       this.content = null;
-    }
-  }
+    },
+  },
 };
 </script>

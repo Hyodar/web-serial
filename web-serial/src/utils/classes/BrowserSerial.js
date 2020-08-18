@@ -14,7 +14,7 @@ class IconvEncoderStream extends window.TransformStream {
             },
             transform(chunk, controller) {
                 controller.enqueue(iconv.encode(chunk, this.options.encoding));
-            }
+            },
         });
     }
 }
@@ -27,14 +27,14 @@ class IconvDecoderStream extends window.TransformStream {
             },
             transform(chunk, controller) {
                 controller.enqueue(iconv.decode(chunk, this.options.encoding));
-            }
+            },
         });
     }
 }
 
 class BrowserSerial {
 
-    static Error = Object.freeze({
+    static Error = {
         NoWebSerial: new Error(
             "This browser doesn't support or hasn't enabled the WebSerialAPI."
         ),
@@ -49,8 +49,8 @@ class BrowserSerial {
         ),
         AlreadyActive: new Error(
             "This serial connection is already active."
-        )
-    });
+        ),
+    };
 
     constructor(options) {
         BrowserSerial.checkCompatibility();

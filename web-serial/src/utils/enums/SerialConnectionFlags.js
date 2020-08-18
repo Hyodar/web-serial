@@ -2,7 +2,7 @@ const SerialConnectionFlags = {
     RTSCTS: "rtscts",
     XON: "xon",
     XOFF: "xoff",
-    XANY: "xany"
+    XANY: "xany",
 };
 
 export default SerialConnectionFlags;

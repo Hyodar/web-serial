@@ -37,7 +37,7 @@ export default {
   methods: {
     emitToggle(event) {
       this.$emit("input", event);
-    }
-  }
+    },
+  },
 }
 </script>
