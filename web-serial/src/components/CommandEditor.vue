@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" persistent max-width="300px">
+  <v-dialog v-model="dialog" persistent max-width="300px" @click:outside="clickOutside">
     <v-card>
       <v-card-title>
         <span class="headline">Command Editor</span>
@@ -98,6 +98,11 @@ export default {
       }
 
       this.dialog = false;
+    },
+
+    clickOutside() {
+      this.closeDialog(false);
+      this.$emit("snackbar", SnackbarMessage.Warning.DidntSaveCommand);
     },
   },
 };

@@ -59,6 +59,16 @@ const SnackbarMessage = {
       content: "Hmm... Did you write your regex with '/' and flags? Those will be treated as actual characters, as you only need to write the regex content. The default flags are 'gms'.",
       timeout: 7000,
     },
+    DidntSaveCommand: {
+      color: "warning",
+      content: "Your command changes weren't saved.",
+      timeout: 4000,
+    },
+    DidntSaveExpression: {
+      color: "warning",
+      content: "Your expression changes weren't saved.",
+      timeout: 4000,
+    },
   }
 };
 
