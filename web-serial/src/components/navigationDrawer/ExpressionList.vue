@@ -24,7 +24,10 @@
       </v-btn>
     </template>
 
-    <ExpressionEditor ref="expressionEditor" v-on:snackbar="sendSnackbar($event)" />
+    <ExpressionEditor
+      ref="expressionEditor"
+      v-on:snackbar="sendSnackbar($event)"
+    />
 
     <v-card class="grey darken-3" style="height: 300px; width: 100%;" v-bar>
       <v-list>
@@ -168,7 +171,7 @@ export default {
 
     updateColor(expression, color) {
       expression.color = color;
-      this.$set(this.value, this.value.indexOf(expression), Object.assign({}, expression));
+      this.$set(this.value, this.value.indexOf(expression), expression);
     },
   },
 };

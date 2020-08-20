@@ -74,19 +74,22 @@ export default {
         return;
       }
 
+      this.trySettingRegex();
+      this.dialog = false;
+    },
+
+    trySettingRegex(expression=this.expression, expressionField=this.expressionField) {
       try {
-        if (maybeSlashEnclosed(this.expressionField)) {
+        if (maybeSlashEnclosed(expressionField)) {
           this.$emit("snackbar", SnackbarMessage.Warning.NoRegexSlashes);
         }
 
-        this.expression.expression = new RegExp(this.expressionField || "a^", "");
+        expression.expression = new RegExp(expressionField || "a^", "");
       }
       catch {
         this.$emit("snackbar", SnackbarMessage.Error.InvalidRegExp);
-        this.expression.expression = new RegExp(noMatchRegexString, "");
+        expression.expression = new RegExp(noMatchRegexString, "");
       }
-
-      this.dialog = false;
     },
 
     expressionsEqual(expression1, expression2) {
@@ -108,18 +111,13 @@ export default {
 
     clickOutside(event) {
       if (this.shouldWarnNotSaved()) {
-        const expressionCopy = Object.assign({}, this.expression);
+        const expression = this.expression;
         const expressionField = this.expressionField;
+        const expressionCopy = Object.assign({}, this.expression);
 
         this.$emit("snackbar", SnackbarMessage.Warning.DidntSaveExpression(() => {
-          if (this.expression.id !== expressionCopy.id) {
-            this.$emit("snackbar", SnackbarMessage.Error.ExpressionSave);
-            return;
-          }
-
-          Object.assign(this.expression, expressionCopy);
-          this.expressionField = expressionField;
-          this.closeDialog(true);
+          Object.assign(expression, expressionCopy);
+          this.trySettingRegex(expression, expressionField);
         }));
       }
 

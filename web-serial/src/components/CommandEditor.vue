@@ -83,22 +83,27 @@ export default {
         return;
       }
 
-      if (this.sequenceField) {
-        try {
-          if (maybeSlashEnclosed(this.sequenceField)) {
-            this.$emit("snackbar", SnackbarMessage.Warning.NoRegexSlashes);
-          }
+      this.trySettingRegex();
+      this.dialog = false;
+    },
 
-          this.command.sequence = new RegExp(this.sequenceField, unionReplacerFlags);
-          this.$emit("command-changed", this.command);
-        }
-        catch {
-          this.$emit("snackbar", SnackbarMessage.Error.InvalidRegExp);
-          this.command.sequence = null;
-        }
+    trySettingRegex(command=this.command, sequenceField=this.sequenceField) {
+      if (!sequenceField) {
+        return;
       }
 
-      this.dialog = false;
+      try {
+        if (maybeSlashEnclosed(sequenceField)) {
+          this.$emit("snackbar", SnackbarMessage.Warning.NoRegexSlashes);
+        }
+
+        command.sequence = new RegExp(sequenceField, unionReplacerFlags);
+        this.$emit("command-changed", command);
+      }
+      catch {
+        this.$emit("snackbar", SnackbarMessage.Error.InvalidRegExp);
+        command.sequence = null;
+      }
     },
 
     shouldWarnNotSaved() {
@@ -127,18 +132,13 @@ export default {
 
     clickOutside(event) {
       if (this.shouldWarnNotSaved()) {
-        const commandCopy = Object.assign({}, this.command);
+        const command = this.command;
         const sequenceField = this.sequenceField;
+        const commandCopy = Object.assign({}, this.command);
 
         this.$emit("snackbar", SnackbarMessage.Warning.DidntSaveCommand(() => {
-          if (this.command.id !== commandCopy.id) {
-            this.$emit("snackbar", SnackbarMessage.Error.CommandSave);
-            return;
-          }
-
-          Object.assign(this.command, commandCopy);
-          this.sequenceField = sequenceField;
-          this.closeDialog(true);
+          Object.assign(command, commandCopy);
+          this.trySettingRegex(command, sequenceField);
         }));
       }
 
