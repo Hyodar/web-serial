@@ -149,8 +149,11 @@ export default {
     },
     
     addNewExpression() {
+      const id = this.expressionCount++;
+
       this.value.push({
-        name: `Expression ${this.expressionCount++}`,
+        id: id,
+        name: `Expression ${id}`,
         active: false,
         expression: new RegExp(noMatchRegexString, ""),
         color: "#000000",

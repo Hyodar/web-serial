@@ -2,19 +2,19 @@
   <v-snackbar
     top
     v-model="isOn"
-    v-if="content"
-    :color="content.color"
+    v-if="message"
+    :color="message.color"
   >
-    {{ content.content }}
+    {{ message.content }}
     <v-btn
       text
-      v-for="(button, idx) in content.buttons"
+      v-for="(button, idx) in message.buttons"
       v-bind:key="idx"
-      v-on:click="button.callback"
+      v-on:click="button.callback(); close();"
     >
       {{ button.text }}
     </v-btn>
-    <v-btn text v-on:click="close"> Close </v-btn>
+    <v-btn text v-on:click="close">Close</v-btn>
   </v-snackbar>
 </template>
 
@@ -26,7 +26,7 @@ export default {
 
   data: () => ({
     isOn: false,
-    content: null,
+    message: null,
     closeScheduler: null,
   }),
 
@@ -39,12 +39,12 @@ export default {
       this.closeScheduler.schedule(msg.timeout);
 
       this.isOn = true;
-      this.content = msg;
+      this.message = msg;
     },
 
     close() {
       this.isOn = false;
-      this.content = null;
+      this.message = null;
     },
   },
 };

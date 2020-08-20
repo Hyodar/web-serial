@@ -84,8 +84,11 @@ export default {
     },
 
     addNewCommand() {
+      const id = this.commandCount++;
+      
       this.value.push({
-        name: `Command ${this.commandCount++}`,
+        id: id,
+        name: `Command ${id}`,
         content: "",
         sequence: null,
         scanCursor: this.scanBuffer.length,

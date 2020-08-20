@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-model="dialog" persistent max-width="300px" @click:outside="clickOutside">
-    <v-card>
+    <v-card ref="content">
       <v-card-title>
         <span class="headline">Command Editor</span>
       </v-card-title>
@@ -49,6 +49,7 @@ export default {
   data: () => ({
     dialog: false,
     command: {
+      id: -1,
       name: "",
       content: "",
       sequence: null,
@@ -100,9 +101,50 @@ export default {
       this.dialog = false;
     },
 
-    clickOutside() {
-      this.closeDialog(false);
-      this.$emit("snackbar", SnackbarMessage.Warning.DidntSaveCommand);
+    shouldWarnNotSaved() {
+      const previousSequenceField = (this.previousCommand.sequence)
+        ? this.previousCommand.sequence.toString().slice(1, -(1 + unionReplacerFlags.length))
+        : "";
+
+      // A bit of spaghetti here: since this.command has a null sequence, we
+      // can't compare the sequences inside JSON.stringify().
+      // Since the sequences are checked as strings in another comparison,
+      // this.previousCommand.sequence can be set to null so it will match
+      // this.command inside JSON.stringify().
+
+      const seq = this.previousCommand.sequence;
+      this.previousCommand.sequence = null;
+
+      const resp = JSON.stringify(this.command) !== JSON.stringify(this.previousCommand)
+        || this.sequenceField !== previousSequenceField;
+
+      // so this doesnt lead to any issues if we need to revert this.command
+      // to this.previousCommand
+      this.previousCommand.sequence = seq;
+      
+      return resp;
+    },
+
+    clickOutside(event) {
+      if (this.shouldWarnNotSaved()) {
+        const commandCopy = Object.assign({}, this.command);
+        const sequenceField = this.sequenceField;
+
+        this.$emit("snackbar", SnackbarMessage.Warning.DidntSaveCommand(() => {
+          if (this.command.id !== commandCopy.id) {
+            this.$emit("snackbar", SnackbarMessage.Error.CommandSave);
+            return;
+          }
+
+          Object.assign(this.command, commandCopy);
+          this.sequenceField = sequenceField;
+          this.closeDialog(true);
+        }));
+      }
+
+      if (!this.$refs.content.$el.contains(event.target)) {
+        this.closeDialog(false);
+      }
     },
   },
 };

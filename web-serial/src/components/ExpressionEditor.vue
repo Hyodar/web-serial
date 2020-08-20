@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-model="dialog" persistent max-width="300px" @click:outside="clickOutside">
-    <v-card>
+    <v-card ref="content">
       <v-card-title>
         <span class="headline">Expression Editor</span>
       </v-card-title>
@@ -79,7 +79,7 @@ export default {
           this.$emit("snackbar", SnackbarMessage.Warning.NoRegexSlashes);
         }
 
-        this.expression.expression = new RegExp(this.expressionField, "");
+        this.expression.expression = new RegExp(this.expressionField || "a^", "");
       }
       catch {
         this.$emit("snackbar", SnackbarMessage.Error.InvalidRegExp);
@@ -89,9 +89,43 @@ export default {
       this.dialog = false;
     },
 
-    clickOutside() {
-      this.closeDialog(false);
-      this.$emit("snackbar", SnackbarMessage.Warning.DidntSaveExpression);
+    expressionsEqual(expression1, expression2) {
+      const expression1Regex = (expression1.expression)
+        ? expression1.expression.toString()
+        : "";
+      const expression2Regex = (expression2.expression)
+        ? expression2.expression.toString()
+        : "";
+
+      return JSON.stringify(expression1) === JSON.stringify(expression2)
+        && expression1Regex === expression2Regex;
+    },
+
+    shouldWarnNotSaved() {
+      return !this.expressionsEqual(this.expression, this.previousExpression)
+        || this.expressionField !== this.previousExpression.expression.toString().slice(1, -1);
+    },
+
+    clickOutside(event) {
+      if (this.shouldWarnNotSaved()) {
+        const expressionCopy = Object.assign({}, this.expression);
+        const expressionField = this.expressionField;
+
+        this.$emit("snackbar", SnackbarMessage.Warning.DidntSaveExpression(() => {
+          if (this.expression.id !== expressionCopy.id) {
+            this.$emit("snackbar", SnackbarMessage.Error.ExpressionSave);
+            return;
+          }
+
+          Object.assign(this.expression, expressionCopy);
+          this.expressionField = expressionField;
+          this.closeDialog(true);
+        }));
+      }
+
+      if (!this.$refs.content.$el.contains(event.target)) {
+        this.closeDialog(false);
+      }
     },
   },
 };
