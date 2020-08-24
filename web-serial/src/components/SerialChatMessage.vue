@@ -97,7 +97,7 @@ export default {
     },
     dateString: function() {
       const dateObj = new Date(this.date);
-      return `[${dateObj.toLocaleDateString()} - ${dateObj.toLocaleTimeString()}.${dateObj.getMilliseconds()}]`;
+      return `[${dateObj.toLocaleDateString()} - ${dateObj.toLocaleTimeString()}.${dateObj.getMilliseconds().toString().padStart(3, "0")}]`;
     },
   },
 
