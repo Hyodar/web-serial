@@ -74,7 +74,6 @@ export default {
   props: ["value", "scanBufferSize"],
 
   data: () => ({
-    commandCount: 0,
     scanBuffer: "",
   }),
 
@@ -84,7 +83,9 @@ export default {
     },
 
     addNewCommand() {
-      const id = this.commandCount++;
+      const id = (this.value.length)
+        ? this.value[this.value.length - 1].id + 1
+        : 0;
       
       this.value.push({
         id: id,

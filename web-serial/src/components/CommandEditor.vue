@@ -41,6 +41,7 @@
 <script>
 import { maybeSlashEnclosed } from "../utils/textRegex";
 import { unionReplacerFlags } from "../utils/textRegex";
+import { removeFlags } from "../utils/textRegex";
 import SnackbarMessage from "../utils/enums/SnackbarMessage";
 
 export default {
@@ -64,9 +65,7 @@ export default {
       this.previousCommand = Object.assign({}, command);
 
       if (this.command.sequence) {
-        this.sequenceField = this.command.sequence
-          .toString()
-          .slice(1, -(1 + unionReplacerFlags.length));
+        this.sequenceField = removeFlags(this.command.sequence.toString());
 
         // prevent the previous sequence from being matched while the editor is opened
         this.command.sequence = null;
@@ -108,7 +107,7 @@ export default {
 
     shouldWarnNotSaved() {
       const previousSequenceField = (this.previousCommand.sequence)
-        ? this.previousCommand.sequence.toString().slice(1, -(1 + unionReplacerFlags.length))
+        ? removeFlags(this.previousCommand.sequence.toString())
         : "";
 
       // A bit of spaghetti here: since this.command has a null sequence, we

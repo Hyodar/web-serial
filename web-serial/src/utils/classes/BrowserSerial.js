@@ -70,16 +70,23 @@ class BrowserSerial {
 
         this.serialPort = null;
 
-        this.options = {
+        this.defaultOptions = {
             decodeFrom: "ascii",
             encodeTo: "ascii",
             readLoopCallback: null,
         };
+
         this.loadOptions(options);
     }
 
     loadOptions(options) {
-        Object.assign(this.options, options);
+        this.options = options;
+
+        Object.entries(this.defaultOptions).forEach(([key, val]) => {
+            if (this.options[key] === undefined) {
+                this.options[key] = val;
+            }
+        });
     }
 
     setDecodeFrom(encoding) {

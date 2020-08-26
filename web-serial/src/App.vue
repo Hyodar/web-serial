@@ -45,7 +45,7 @@
         v-model="userOptions.commands"
         v-on:sendCommand="sendCommand"
         v-on:snackbar="setSnackbarMessage($event)"
-        :scanBufferSize="1000"
+        :scanBufferSize="userOptions.scanBufferSize"
       />
     </NavigationDrawer>
 
@@ -56,7 +56,7 @@
         :logMode="userOptions.logMode"
         :displayMode="userOptions.displayMode"
         :expressions="userOptions.expressions"
-        :messageBufferSize="500"
+        :messageBufferSize="userOptions.messageBufferSize"
         v-on:clear="onChatCleared"
       />
       <SerialInput v-on:sendMessage="sendMessage" />
@@ -98,6 +98,8 @@ import DisplayMode from "./utils/enums/DisplayMode";
 import LogMode from "./utils/enums/LogMode";
 import MessageAuthor from "./utils/enums/MessageAuthor";
 
+import { splitRegexString } from "./utils/textRegex";
+
 import unescapeJs from "unescape-js";
 import swal from "sweetalert";
 
@@ -131,6 +133,9 @@ export default {
       }
       throw e;
     }
+
+    window.onbeforeunload = this.saveUserConfiguration.bind(this);
+    this.tryLoadingUserConfiguration();
   },
 
   data: () => ({
@@ -141,6 +146,10 @@ export default {
     userOptions: {
       logMode: LogMode.CHAT,
       displayMode: DisplayMode.ASCII,
+      scanBufferSize: 1024,
+      messageBufferSize: 512,
+      decodeFrom: "ascii",
+      encodeTo: "ascii",
       serialConnection: {
         active: false,
         serialOptions: {
@@ -200,8 +209,14 @@ export default {
     },
 
     async openSerial() {
+      const self = this;
       this.browserSerial = new BrowserSerial({
-        decodeFrom: "ascii",
+        get decodeFrom() {
+          return self.userOptions.decodeFrom;
+        },
+        get encodeTo() {
+          return self.userOptions.encodeTo;
+        },
         readLoopCallback: chunk => {
           this.sendMessage(chunk, MessageAuthor.SERIAL);
         }
@@ -248,7 +263,72 @@ export default {
 
     onChatCleared() {
       this.$refs.commandList.resetScanBuffer();
-    }
+    },
+
+    saveUserConfiguration() {
+      this.userOptions.active = false;
+
+      this.userOptions.expressions = this.userOptions.expressions.map(el => ({
+        ...el,
+        expression: splitRegexString(el.expression.toString()),
+      }));
+      this.userOptions.commands = this.userOptions.commands.map(el => ({
+        ...el,
+        sequence: (el.sequence)? splitRegexString(el.sequence.toString()) : null,
+      }));
+
+      window.localStorage.setItem("web-serial-config", JSON.stringify(this.userOptions));
+    },
+
+    tryLoadingUserConfiguration() {
+      const savedConfig = window.localStorage.getItem("web-serial-config");
+      if (!savedConfig) return;
+      
+      this.setSnackbarMessage(
+        SnackbarMessage.Success.LoadUserConfiguration(() => {
+          this.loadUserConfiguration(JSON.parse(savedConfig));
+        }
+      ));
+    },
+
+    loadUserConfiguration(parsedConfig) {
+      let lastExpressionId = (this.userOptions.expressions.length)
+        ? this.userOptions.expressions[this.userOptions.expressions.length - 1].id
+        : -1;
+
+      parsedConfig.expressions.forEach(el => {
+        el.expression = new RegExp(el.expression[0], el.expression[1]);
+        
+        const id = ++lastExpressionId;
+        if (el.name === `Expression ${el.id}`) {
+          el.name = `Expression ${id}`;
+        }
+        el.id = id;
+      });
+
+      let lastCommandId = (this.userOptions.commands.length)
+        ? this.userOptions.commands[this.userOptions.commands.length - 1].id
+        : -1;
+
+      parsedConfig.commands.forEach(el => {
+        if (el.sequence) {
+          el.sequence = new RegExp(el.sequence[0], el.sequence[1]);
+        }
+        el.scanCursor = this.$refs.commandList.scanBuffer.length;
+        
+        const id = ++lastCommandId;
+        if (el.name === `Command ${el.id}`) {
+          el.name = `Command ${id}`;
+        }
+        el.id = id;
+
+      });
+
+      parsedConfig.expressions = this.userOptions.expressions.concat(parsedConfig.expressions);
+      parsedConfig.commands = this.userOptions.commands.concat(parsedConfig.commands);
+
+      this.userOptions = parsedConfig;
+    },
   }
 };
 </script>

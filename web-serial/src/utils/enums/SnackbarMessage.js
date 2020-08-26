@@ -48,6 +48,14 @@ const SnackbarMessage = {
       content: `The command '${commandName}' was triggered!`,
       timeout: 1000,
     }),
+    LoadUserConfiguration: (loadCallback) => ({
+      color: "success",
+      content: "Previous session configuration found!",
+      timeout: 6000,
+      buttons: [
+        { text: "Load", callback: loadCallback },
+      ],
+    }),
   },
   Warning: {
     SerialConnectionClosed: {
@@ -63,7 +71,7 @@ const SnackbarMessage = {
       content: "Your command changes weren't saved.",
       timeout: 4000,
       buttons: [
-        { text: "Save", callback: saveCallback }
+        { text: "Save", callback: saveCallback },
       ],
     }),
     DidntSaveExpression: (saveCallback) => ({

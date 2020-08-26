@@ -142,17 +142,15 @@ export default {
 
   props: ["value"],
 
-  data: () => ({
-    expressionCount: 0,
-  }),
-
   methods: {
     sendSnackbar(event) {
       this.$emit("snackbar", event);
     },
     
     addNewExpression() {
-      const id = this.expressionCount++;
+      const id = (this.value.length)
+        ? this.value[this.value.length - 1].id + 1
+        : 0;
 
       this.value.push({
         id: id,

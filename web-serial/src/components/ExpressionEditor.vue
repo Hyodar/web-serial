@@ -38,6 +38,7 @@
 <script>
 import { maybeSlashEnclosed } from "../utils/textRegex";
 import { noMatchRegexString } from "../utils/textRegex";
+import { removeFlags } from "../utils/textRegex";
 import SnackbarMessage from "../utils/enums/SnackbarMessage";
 import HorizontalSelection from "./HorizontalSelection";
 
@@ -63,8 +64,7 @@ export default {
       this.dialog = true;
       this.expression = expression;
       this.previousExpression = Object.assign({}, expression);
-
-      this.expressionField = this.expression.expression.toString().slice(1, -1);
+      this.expressionField = removeFlags(this.expression.expression.toString());
     },
 
     closeDialog(save=false) {
@@ -84,7 +84,7 @@ export default {
           this.$emit("snackbar", SnackbarMessage.Warning.NoRegexSlashes);
         }
 
-        expression.expression = new RegExp(expressionField || "a^", "");
+        expression.expression = new RegExp(expressionField || noMatchRegexString, "");
       }
       catch {
         this.$emit("snackbar", SnackbarMessage.Error.InvalidRegExp);
@@ -106,7 +106,7 @@ export default {
 
     shouldWarnNotSaved() {
       return !this.expressionsEqual(this.expression, this.previousExpression)
-        || this.expressionField !== this.previousExpression.expression.toString().slice(1, -1);
+        || this.expressionField !== removeFlags(this.previousExpression.expression.toString());
     },
 
     clickOutside(event) {

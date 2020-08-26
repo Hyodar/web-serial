@@ -29,14 +29,14 @@
               <v-col>
                 <v-select
                   :items="menus.parity.options"
-                  :value="value.serialOptions.parity"
+                  v-model="value.serialOptions.parity"
                   label="Parity Type"
                 ></v-select>
               </v-col>
               <v-col>
                 <v-text-field
                   type="number"
-                  :value="value.serialOptions.buffersize"
+                  v-model="value.serialOptions.buffersize"
                   label="Buffer Size"
                 ></v-text-field>
               </v-col>
@@ -46,14 +46,14 @@
               <v-col>
                 <v-select
                   :items="menus.databits.options"
-                  :value="value.serialOptions.databits"
+                  v-model="value.serialOptions.databits"
                   label="Data Bits"
                 ></v-select>
               </v-col>
               <v-col>
                 <v-select
                   :items="menus.stopbits.options"
-                  :value="value.serialOptions.stopbits"
+                  v-model="value.serialOptions.stopbits"
                   label="Stop Bits"
                 ></v-select>
               </v-col>
@@ -63,8 +63,8 @@
               multiple
               dense
               :options="menus.flags.options"
-              :value="menus.flags.default"
-              v-on:changedValue="setSerialConnectionFlags($event)"
+              :value="menus.flags.selected"
+              v-on:changedValue="menus.flags.selected = $event"
               class="mt-2"
             />
             
@@ -129,7 +129,7 @@ export default {
             val: SerialConnectionFlags.XANY,
           },
         ],
-        default: []
+        selected: [],
       },
     }
   }),
@@ -137,7 +137,25 @@ export default {
   computed: {
     serialConnectionButtonText() {
       return (this.value.active)? "Cancel" : "Go!";
-    }
+    },
+  },
+
+  watch: {
+    value() {
+      this.menus.flags.selected = Object.values(SerialConnectionFlags).filter(flag => {
+        return this.value.serialOptions[flag];
+      });
+    },
+
+    "menus.flags.selected"() {
+      Object.values(SerialConnectionFlags).forEach(flag => {
+        this.value.serialOptions[flag] = false;
+      });
+
+      this.menus.flags.selected.forEach(flag => {
+        this.value.serialOptions[flag] = true;
+      });
+    },
   },
 
   methods: {
@@ -149,16 +167,6 @@ export default {
         this.$emit("serialConnected");
       }
     },
-
-    setSerialConnectionFlags(flags) {
-      Object.values(SerialConnectionFlags).forEach(flag => {
-        this.value.serialOptions[flag] = false;
-      });
-
-      flags.forEach(flag => {
-        this.value.serialOptions[flag] = true;
-      });
-    }
   }
 }
 </script>
