@@ -118,7 +118,7 @@ export default {
         this.scanBuffer = this.scanBuffer.slice(overflow);
 
         this.value.forEach(command => {
-          command.scanCursor -= overflow;
+          command.scanCursor = Math.max(0, command.scanCursor - overflow);
         });
       }
 

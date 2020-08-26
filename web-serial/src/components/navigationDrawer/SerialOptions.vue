@@ -36,7 +36,8 @@
               <v-col>
                 <v-text-field
                   type="number"
-                  v-model="value.serialOptions.buffersize"
+                  v-model.number="value.serialOptions.buffersize"
+                  :rules="[v => v >= 0 || 'Must be positive or zero']"
                   label="Buffer Size"
                 ></v-text-field>
               </v-col>

@@ -20,7 +20,6 @@
 </template>
 
 <script>
-
 import unescapeJs from "unescape-js";
 
 export default {

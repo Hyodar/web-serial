@@ -22,6 +22,12 @@
         />
       </div>
       -->
+      <ConfigurationMenu
+        v-bind:scanBufferSize.sync="userOptions.scanBufferSize"
+        v-bind:messageBufferSize.sync="userOptions.messageBufferSize"
+        v-bind:decodeFrom.sync="userOptions.decodeFrom"
+        v-bind:encodeTo.sync="userOptions.encodeTo"
+      />
 
       <v-spacer></v-spacer>
 
@@ -30,6 +36,7 @@
 
     <NavigationDrawer v-model="drawer">
       <SerialOptions
+        style="padding-top: 0px;"
         :value="userOptions.serialConnection"
         v-on:serialConnected="openSerial"
         v-on:serialDisconnected="closeSerial"
@@ -81,6 +88,10 @@ html {
 </style>
 
 <script>
+import unescapeJs from "unescape-js";
+import swal from "sweetalert";
+import iconv from "iconv-lite";
+
 import SerialOptions from "./components/navigationDrawer/SerialOptions";
 import LogModeOptions from "./components/navigationDrawer/LogModeOptions";
 import DisplayModeOptions from "./components/navigationDrawer/DisplayModeOptions";
@@ -91,6 +102,7 @@ import NavigationDrawer from "./components/NavigationDrawer";
 import SerialChat from "./components/SerialChat";
 import SerialInput from "./components/SerialInput";
 import Snackbar from "./components/Snackbar";
+import ConfigurationMenu from "./components/ConfigurationMenu";
 
 import BrowserSerial from "./utils/classes/BrowserSerial";
 import SnackbarMessage from "./utils/enums/SnackbarMessage";
@@ -99,9 +111,6 @@ import LogMode from "./utils/enums/LogMode";
 import MessageAuthor from "./utils/enums/MessageAuthor";
 
 import { splitRegexString } from "./utils/textRegex";
-
-import unescapeJs from "unescape-js";
-import swal from "sweetalert";
 
 export default {
   name: "App",
@@ -116,6 +125,7 @@ export default {
     DisplayModeOptions,
     ExpressionList,
     CommandList,
+    ConfigurationMenu,
   },
 
   mounted() {
@@ -171,14 +181,14 @@ export default {
 
   methods: {
     sendMessage(messageContent, from=MessageAuthor.SELF) {
-      this.$refs.chat.addEntry(messageContent, from);
-
       if (from === MessageAuthor.SELF || from === MessageAuthor.COMMAND) {
         if (this.browserSerial) {
           this.browserSerial.write(messageContent);
         }
+        this.$refs.chat.addEntry(iconv.encode(messageContent, this.userOptions.encodeTo).toString(), from);
       }
       else {
+        this.$refs.chat.addEntry(messageContent, from);
         this.$refs.commandList.addToScanBuffer(messageContent);
       }
     },
