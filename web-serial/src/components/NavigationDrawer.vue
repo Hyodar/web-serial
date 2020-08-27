@@ -1,8 +1,8 @@
 <template>
   <v-navigation-drawer :value="value" v-on:input="emitToggle" app right width="350">
-    <v-expansion-panels flat multiple accordion v-model="openedPanels">
+    <draggable tag="v-expansion-panels" :component-data="getExpansionPanelsOptions()" ghost-class="being-dragged">
       <slot></slot>
-    </v-expansion-panels>
+    </draggable>
     <BottomInfo />
   </v-navigation-drawer>
 </template>
@@ -24,7 +24,14 @@
 }
 </style>
 
+<style scoped>
+.being-dragged {
+  opacity: 0.5;
+}
+</style>
+
 <script>
+import draggable from "vuedraggable";
 import BottomInfo from "./navigationDrawer/BottomInfo";
 
 export default {
@@ -32,18 +39,33 @@ export default {
 
   components: {
     BottomInfo,
+    draggable,
   },
 
   props: ["value"],
 
-  data: () => ({
-    openedPanels: [0, 1, 2],
-  }),
+  data: () => ({}),
 
   methods: {
     emitToggle(event) {
       this.$emit("input", event);
     },
+    
+    getExpansionPanelsOptions() {
+      return {
+        on: {
+          input: this.emitToggle,
+        },
+        attrs: {
+          flat: true,
+          multiple: true,
+          accordion: true,
+        },
+        props: {
+          value: [0, 1, 2],
+        }
+      };
+    }
   },
 }
 </script>
