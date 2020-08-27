@@ -85,6 +85,10 @@
 	background-color: #ffffff42;
 }
 
+.custom-scrollbar::-webkit-scrollbar-corner {
+  background-color: #f5f5f500;
+}
+
 </style>
 
 <script>

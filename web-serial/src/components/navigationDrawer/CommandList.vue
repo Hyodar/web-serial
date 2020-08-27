@@ -3,7 +3,7 @@
     <template v-slot:header>
       <InfoDialog label="Commands">
         <p>
-          Here, you can add <b> commands </b> to quickly send whenever
+          Here, you can add <b>commands</b> to quickly send whenever
           necessary, without needing to type it over and over again.
         </p>
         <p>
@@ -12,17 +12,14 @@
           <span class="text-caption"> Is this considered a rickroll? </span>
         </p>
         <p>
-          <b> Just a note!!! </b> We're not simply evaluating the string,
+          <b>Just a note!!!</b> We're not simply evaluating the string,
           we use a really nice library to safely process the text, so don't
           worry!
         </p>
       </InfoDialog>
       <v-spacer></v-spacer>
-      <div class="text-button"> Commands </div>
+      <div class="text-button">Commands</div>
       <v-spacer></v-spacer>
-      <v-btn icon v-on:click="addNewCommand" small>
-        <v-icon> mdi-plus </v-icon>
-      </v-btn>
     </template>
 
     <CommandEditor
@@ -31,7 +28,7 @@
       v-on:command-changed="commandChanged"
     />
 
-    <v-card class="grey darken-3" style="height: 300px; width: 100%;" v-bar>
+    <v-card class="grey darken-3 custom-scrollbar" style="height: 300px; width: 100%; overflow-y: scroll;">
       <v-list>
         <v-list-item-group>
           <v-list-item
@@ -47,6 +44,16 @@
             </v-list-item-action>
             <v-list-item-content v-on:click="openCommandEditor(item);">
               <v-list-item-title v-text="item.name"></v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item class="ma-2">
+            <v-list-item-action>
+            </v-list-item-action>
+            <v-list-item-content @click.stop="addNewCommand($event);">
+              <v-list-item-title>
+                <v-icon>mdi-plus</v-icon>
+                Add command
+              </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list-item-group>
@@ -87,13 +94,16 @@ export default {
         ? this.value[this.value.length - 1].id + 1
         : 0;
       
-      this.value.push({
+      const newCommand = {
         id: id,
         name: `Command ${id}`,
         content: "",
         sequence: null,
         scanCursor: this.scanBuffer.length,
-      });
+      };
+
+      this.value.push(newCommand);
+      this.openCommandEditor(newCommand);
     },
 
     openCommandEditor(command) {

@@ -1,6 +1,8 @@
 <template>
   <v-navigation-drawer :value="value" v-on:input="emitToggle" app right width="350">
-    <slot></slot>
+    <v-expansion-panels flat multiple accordion v-model="openedPanels">
+      <slot></slot>
+    </v-expansion-panels>
     <BottomInfo />
   </v-navigation-drawer>
 </template>
@@ -33,6 +35,10 @@ export default {
   },
 
   props: ["value"],
+
+  data: () => ({
+    openedPanels: [0, 1, 2],
+  }),
 
   methods: {
     emitToggle(event) {
