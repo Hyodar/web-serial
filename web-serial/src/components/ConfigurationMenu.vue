@@ -8,7 +8,7 @@
       </v-btn>
     </template>
     <v-card>
-      <v-toolbar dark color="grey darken-3">
+      <v-toolbar>
         <v-btn icon dark @click="dialog = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
@@ -105,9 +105,11 @@ export default {
   mounted() {
     this.restoreDefaults();
 
-    import("iconv-lite/encodings").then(encodingsObj => {
-      this.encodings = Object.keys(encodingsObj);
-    });
+    if (!this.encodings.length) {
+      import("iconv-lite/encodings").then(encodingsObj => {
+        this.encodings = Object.keys(encodingsObj);
+      });
+    }
   },
 
   data: () => ({
