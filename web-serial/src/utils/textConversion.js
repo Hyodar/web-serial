@@ -1,6 +1,6 @@
 
 function charToBase(chr, base, minLength=0) {
-    return ` ${chr.charCodeAt(0).toString(base).padStart(minLength, "0")}`;
+    return `${chr.charCodeAt(0).toString(base).padStart(minLength, "0")} `;
 }
 
 const asciiPrintableRegex = /^[ -~]+$/;
