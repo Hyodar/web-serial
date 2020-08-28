@@ -276,7 +276,7 @@ export default {
     },
 
     saveUserConfiguration() {
-      this.userOptions.active = false;
+      this.userOptions.serialConnection.active = false;
 
       this.userOptions.expressions = this.userOptions.expressions.map(el => ({
         ...el,
