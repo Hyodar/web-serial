@@ -44,7 +44,9 @@ export default {
 
   props: ["value"],
 
-  data: () => ({}),
+  data: () => ({
+    openedPanels: [0, 1, 2],
+  }),
 
   methods: {
     emitToggle(event) {
@@ -62,10 +64,10 @@ export default {
           accordion: true,
         },
         props: {
-          value: [0, 1, 2],
+          value: this.openedPanels,
         }
       };
-    }
+    },
   },
 }
 </script>
