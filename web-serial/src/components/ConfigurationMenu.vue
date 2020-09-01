@@ -27,8 +27,8 @@
             <v-combobox
               :items="encodings"
               :value="encodeTo"
-              :rules="[el => (encodings.indexOf(el) !== -1) || 'Encoding doesn\'t exist - defaulted to ascii']"
-              v-on:change="$emit('update:encodeTo', encodings.find(el => el == $event) || 'ascii')"
+              :rules="[el => (encodings.indexOf(el) !== -1) || 'Encoding doesn\'t exist - defaulted to latin-1/ISO 8859-1']"
+              v-on:change="$emit('update:encodeTo', encodings.find(el => el == $event) || defaultValues.encodeTo)"
             />
           </v-list-item-content>
         </v-list-item>
@@ -39,8 +39,8 @@
             <v-combobox
               :items="encodings"
               :value="decodeFrom"
-              :rules="[el => (encodings.indexOf(el) !== -1) || 'Encoding doesn\'t exist - defaulted to ascii']"
-              v-on:change="$emit('update:decodeFrom', encodings.find(el => el == $event) || 'ascii')"
+              :rules="[el => (encodings.indexOf(el) !== -1) || 'Encoding doesn\'t exist - defaulted to latin-1/ISO 8859-1']"
+              v-on:change="$emit('update:decodeFrom', encodings.find(el => el == $event) || defaultValues.decodeTo)"
             />
           </v-list-item-content>
         </v-list-item>
@@ -115,14 +115,19 @@ export default {
   data: () => ({
     dialog: false,
     encodings: [],
+    defaultValues: {
+      scanBufferSize: 1024,
+      messageBufferSize: 512,
+      decodeFrom: "iso88591",
+      encodeTo: "iso88591",
+    },
   }),
 
   methods: {
     restoreDefaults() {
-      this.$emit("update:scanBufferSize", 1024);
-      this.$emit("update:messageBufferSize", 512);
-      this.$emit("update:decodeFrom", "ascii");
-      this.$emit("update:encodeTo", "ascii");
+      Object.entries(this.defaultValues).forEach(([key, val]) => {
+        this.$emit(`update:${key}`, val);
+      });
     },
   }
 }
