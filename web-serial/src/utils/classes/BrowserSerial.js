@@ -71,8 +71,8 @@ class BrowserSerial {
         this.serialPort = null;
 
         this.defaultOptions = {
-            decodeFrom: "ascii",
-            encodeTo: "ascii",
+            decodeFrom: "iso88591",
+            encodeTo: "iso88591",
             readLoopCallback: null,
         };
 

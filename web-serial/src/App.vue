@@ -158,8 +158,8 @@ export default {
       displayMode: DisplayMode.ASCII,
       scanBufferSize: 1024,
       messageBufferSize: 512,
-      decodeFrom: "ascii",
-      encodeTo: "ascii",
+      decodeFrom: "iso88591",
+      encodeTo: "iso88591",
       serialConnection: {
         active: false,
         serialOptions: {
