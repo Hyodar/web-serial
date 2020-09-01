@@ -26,7 +26,7 @@
       v-on:snackbar="sendSnackbar($event)"
     />
 
-    <v-card class="grey darken-3 custom-scrollbar" style="height: 300px; width: 100%; overflow-y: scroll;">
+    <v-card class="grey darken-3 custom-scrollbar" style="height: 240px; width: 100%; overflow-y: scroll; resize: vertical;">
       <v-list>
         <v-list-item-group>
           <v-list-item

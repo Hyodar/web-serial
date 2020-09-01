@@ -28,16 +28,16 @@
       v-on:command-changed="commandChanged"
     />
 
-    <v-card class="grey darken-3 custom-scrollbar" style="height: 300px; width: 100%; overflow-y: scroll;">
+    <v-card class="grey darken-3 custom-scrollbar" style="height: 260px; width: 100%; overflow-y: scroll; resize: vertical;">
       <v-list>
         <v-list-item-group>
           <v-list-item
             v-for="(item, idx) in value"
             :key="idx"
           >
-            <v-list-item-action>
+            <v-list-item-action class="ma-0 mr-4">
               <v-btn icon color="white" v-on:click="sendCommand(item.content)">
-                <v-icon normal class="mdi-flip-horizontal">
+                <v-icon large class="mdi-flip-horizontal">
                   mdi-reply
                 </v-icon>
               </v-btn>
