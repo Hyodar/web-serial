@@ -171,12 +171,12 @@ export default {
           rtscts: false,
           xon: false,
           xoff: false,
-          xany: false
-        }
+          xany: false,
+        },
       },
       expressions: [],
       commands: [],
-    }
+    },
   }),
 
   methods: {

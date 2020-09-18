@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" persistent max-width="300px" @click:outside="clickOutside">
+  <v-dialog v-model="dialog" persistent max-width="400px" @click:outside="clickOutside">
     <v-card ref="content">
       <v-card-title>
         <span class="headline">Command Editor</span>
@@ -10,6 +10,10 @@
             <span class="text-caption">
               Write as you normally would write a Javascript string.
               For example, to write a 0x01 byte, write '\x01'.
+            </span>
+            <span class="text-caption">
+              Also, by enabling capture groups in your RegEx match, you can also use
+              $n inside your command ($1 to $n returns each capture group).
             </span>
             <v-col cols="8">
               <v-text-field v-model="command.name" label="Name" required></v-text-field>
@@ -22,9 +26,15 @@
                 Send automatically when this RegEx matches a new message: <br />
                 (leave empty for a manual command)
               </span>
-              <v-col cols="12">
+              <v-col cols="12" class="pb-0">
                 <v-text-field v-model="sequenceField" label="RegEx" required></v-text-field>
               </v-col>
+              <v-row class="pa-0">
+                <v-col cols="6" class="pa-0"></v-col>
+                <v-col cols="6" class="pa-0">
+                  <v-checkbox class="mt-0" v-model="command.captureGroups" label="Capture Groups" />
+                </v-col>
+              </v-row>
             </v-card>
           </v-row>
         </v-container>
@@ -54,6 +64,7 @@ export default {
       name: "",
       content: "",
       sequence: null,
+      captureGroups: false,
     },
     sequenceField: "",
   }),
