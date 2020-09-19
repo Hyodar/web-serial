@@ -71,13 +71,7 @@ import throttle from "lodash/throttle";
 import { noMatchRegexString } from "../../utils/textRegex";
 import { unionReplacerFlags } from "../../utils/textRegex";
 
-// Initialize capture groups regexes
-const captureGroupsRegexes = new Map();
-captureGroupsRegexes.set(0, new RegExp(noMatchRegexString, unionReplacerFlags));
-for (let i = 1; i <= 10; i++) {
-  const regexText = Array.from(new Array(i).keys()).map(idx => `\\$${idx + 1}`).join("|");
-  captureGroupsRegexes.set(i, new RegExp(regexText, unionReplacerFlags));
-}
+const captureGroupsRegex = /\$[0-9]+/gms;
 
 export default {
   name: "CommandList",
@@ -176,9 +170,10 @@ export default {
 
             if (command.captureGroups) {
               const replacedContent = command.content.replaceAll(
-                captureGroupsRegexes.get(match.length - 1) || new RegExp(match.slice(1).map((_, idx) => `\\$${idx + 1}`).join("|"), unionReplacerFlags),
+                captureGroupsRegex,
                 matchedGroup => {
-                  return match[parseInt(matchedGroup.slice(1))] || "";
+                  const groupNumber = parseInt(matchedGroup.slice(1));
+                  return match[groupNumber] || matchedGroup;
                 }
               );
 
