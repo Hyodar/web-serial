@@ -68,10 +68,6 @@ import CommandEditor from "../CommandEditor";
 import NavigationDrawerRow from "./NavigationDrawerRow";
 import SnackbarMessage from "../../utils/enums/SnackbarMessage";
 import throttle from "lodash/throttle";
-import { noMatchRegexString } from "../../utils/textRegex";
-import { unionReplacerFlags } from "../../utils/textRegex";
-
-const captureGroupsRegex = /\$[0-9]+/gms;
 
 export default {
   name: "CommandList",
@@ -105,6 +101,7 @@ export default {
         sequence: null,
         scanCursor: this.scanBuffer.length,
         captureGroups: false,
+        processedContent: [""],
       };
 
       this.value.push(newCommand);
@@ -154,37 +151,39 @@ export default {
 
       const commandContents = [];
 
-      this.value.filter(command => command.sequence)
-        .forEach(command => {
-          const initialScanCursor = command.scanCursor;
-          const substr = this.scanBuffer.slice(initialScanCursor, this.scanBuffer.length);
-          const matches = substr.matchAll(command.sequence);
+      this.value
+      .filter(command => command.sequence)
+      .forEach(command => {
+        const initialScanCursor = command.scanCursor;
+        const substr = this.scanBuffer.slice(initialScanCursor, this.scanBuffer.length);
+        const matches = substr.matchAll(command.sequence);
 
-          for (const match of matches) {
-            if (!match[0]) continue;
+        for (const match of matches) {
+          if (!match[0]) continue;
 
-            command.scanCursor = Math.max(
-              command.scanCursor,
-              initialScanCursor + match.index + match[0].length
-            );
+          command.scanCursor = Math.max(
+            command.scanCursor,
+            initialScanCursor + match.index + match[0].length
+          );
 
-            if (command.captureGroups) {
-              const replacedContent = command.content.replaceAll(
-                captureGroupsRegex,
-                matchedGroup => {
-                  const groupNumber = parseInt(matchedGroup.slice(1));
-                  return match[groupNumber] || matchedGroup;
-                }
-              );
-
-              commandContents.push(replacedContent);
-            }
-            else {
-              commandContents.push(command.content);
-            }
-            this.sendSnackbar(SnackbarMessage.Success.CommandTriggered(command.name));
+          if (command.captureGroups) {
+            command.processedContent.forEach(contentPart => {
+              // check if contentPart is a number or a string
+              // this check is better than a string check with typeof, I think
+              if (contentPart.length === undefined) {
+                commandContents.push(match[contentPart] || `$${contentPart}`);
+              }
+              else {
+                commandContents.push(contentPart);
+              }
+            });
           }
-        });
+          else {
+            commandContents.push(command.processedContent);
+          }
+          this.sendSnackbar(SnackbarMessage.Success.CommandTriggered(command.name));
+        }
+      });
       
       if (commandContents.length) {
         this.sendCommand(commandContents.join(""));

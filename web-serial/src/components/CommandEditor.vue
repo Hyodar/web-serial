@@ -13,7 +13,8 @@
             </span>
             <span class="text-caption">
               Also, by enabling capture groups in your RegEx match, you can also use
-              $n inside your command ($1 to $n returns each capture group).
+              $n inside your command ($1 to $n returns each capture group). In this case,
+              if you want a literal '$n', write '$' as '\x24'.
             </span>
             <v-col cols="8">
               <v-text-field v-model="command.name" label="Name" required></v-text-field>
@@ -53,6 +54,7 @@ import { maybeSlashEnclosed } from "../utils/textRegex";
 import { unionReplacerFlags } from "../utils/textRegex";
 import { removeFlags } from "../utils/textRegex";
 import SnackbarMessage from "../utils/enums/SnackbarMessage";
+import unescapeJs from "unescape-js";
 
 export default {
   name: "CommandEditor",
@@ -65,6 +67,7 @@ export default {
       content: "",
       sequence: null,
       captureGroups: false,
+      processedContent: "",
     },
     sequenceField: "",
   }),
@@ -73,7 +76,8 @@ export default {
     openDialog(command) {
       this.dialog = true;
       this.command = command;
-      this.previousCommand = Object.assign({}, command);
+      this.previousCommand = JSON.parse(JSON.stringify(command));
+      this.previousCommand.sequence = this.command.sequence;
 
       if (this.command.sequence) {
         this.sequenceField = removeFlags(this.command.sequence.toString());
@@ -94,7 +98,40 @@ export default {
       }
 
       this.trySettingRegex();
+      this.processContent();
       this.dialog = false;
+    },
+
+    processContent(command=this.command) {
+      if (command.captureGroups) {
+        const result = [];
+        let lastIndex = 0;
+
+        for (let i = 0; i < command.content.length; i++) {
+          if (command.content[i] === '$') {
+            let macroEnd = i + 1;
+            while (command.content.charCodeAt(macroEnd) >= 48 && command.content.charCodeAt(macroEnd) <= 57) {
+              macroEnd++;
+            }
+
+            if (macroEnd > i + 1) {
+              const captureGroup = parseInt(command.content.slice(i + 1, macroEnd));
+
+              if (captureGroup) {
+                result.push(unescapeJs(command.content.slice(lastIndex, i)));
+                result.push(captureGroup);
+                lastIndex = macroEnd;
+              }
+            }
+          }
+        }
+
+        result.push(unescapeJs(command.content.slice(lastIndex)));
+        command.processedContent = result;
+      }
+      else {
+        command.processedContent = unescapeJs(command.content);
+      }
     },
 
     trySettingRegex(command=this.command, sequenceField=this.sequenceField) {
@@ -144,11 +181,12 @@ export default {
       if (this.shouldWarnNotSaved()) {
         const command = this.command;
         const sequenceField = this.sequenceField;
-        const commandCopy = Object.assign({}, this.command);
+        const commandCopy = JSON.stringify(this.command);
 
         this.$emit("snackbar", SnackbarMessage.Warning.DidntSaveCommand(() => {
-          Object.assign(command, commandCopy);
+          Object.assign(command, JSON.parse(commandCopy));
           this.trySettingRegex(command, sequenceField);
+          this.processContent(command);
         }));
       }
 
