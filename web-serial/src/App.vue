@@ -146,6 +146,8 @@ export default {
 
     window.onbeforeunload = this.saveUserConfiguration.bind(this);
     this.tryLoadingUserConfiguration();
+
+    console.log(this.userOptions.serialConnection)
   },
 
   data: () => ({
@@ -163,15 +165,12 @@ export default {
       serialConnection: {
         active: false,
         serialOptions: {
-          baudrate: null,
-          databits: 8,
-          stopbits: 1,
+          baudRate: null,
+          dataBits: 8,
+          stopBits: 1,
           parity: "none",
-          buffersize: 255,
-          rtscts: false,
-          xon: false,
-          xoff: false,
-          xany: false,
+          bufferSize: 255,
+          flowControl: "none",
         },
       },
       expressions: [],
