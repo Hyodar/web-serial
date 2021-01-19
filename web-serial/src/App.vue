@@ -230,7 +230,7 @@ export default {
       });
 
       this.browserSerial.addEventListener("disconnect", () => {
-        this.closeSerial(true);
+        this.closeSerial();
         this.setSnackbarMessage(SnackbarMessage.Warning.DeviceDisconnected);
       });
 
@@ -255,11 +255,7 @@ export default {
       this.setSnackbarMessage(SnackbarMessage.Success.SerialConnectionOpened);
     },
 
-    async closeSerial(disconnect=false) {
-      if (!disconnect) {
-        await this.browserSerial.close();
-      }
-
+    async closeSerial() {
       this.userOptions.serialConnection.active = false;
       this.browserSerial = null;
       this.setSnackbarMessage(SnackbarMessage.Success.SerialConnectionClosed);

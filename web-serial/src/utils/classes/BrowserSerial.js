@@ -180,7 +180,7 @@ class BrowserSerial {
     }
 
     async readLoop() {
-        while (this.active) {   
+        while (this.serialPort.readable && this.active) {   
             this.serialReader = this.decoder.readable.getReader();
 
             try {
@@ -195,7 +195,7 @@ class BrowserSerial {
                     this.options.readLoopCallback(value);
                 }
             }
-            catch (e) {
+            catch (err) {
                 this.serialReader.releaseLock();
             }
         }
