@@ -231,7 +231,7 @@ export default {
 
       this.browserSerial.addEventListener("disconnect", () => {
         this.closeSerial(true);
-        this.setSnackbarMessage(SnackbarMessage.Warning.SerialConnectionClosed);
+        this.setSnackbarMessage(SnackbarMessage.Warning.DeviceDisconnected);
       });
 
       try {

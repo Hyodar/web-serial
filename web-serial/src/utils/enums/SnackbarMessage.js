@@ -58,8 +58,8 @@ const SnackbarMessage = {
     }),
   },
   Warning: {
-    SerialConnectionClosed: {
-      content: "The serial connection was closed.",
+    DeviceDisconnected: {
+      content: "A previously paired device was disconnected.",
       timeout: 5000,
     },
     NoRegexSlashes: {
