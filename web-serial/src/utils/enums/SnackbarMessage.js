@@ -29,7 +29,6 @@ const SnackbarMessage = {
       timeout: 3000,
     },
     Custom: (description) => ({
-      color: "error",
       content: description,
       timeout: -1,
     }),
@@ -44,12 +43,10 @@ const SnackbarMessage = {
       timeout: 2000,
     },
     CommandTriggered: (commandName) => ({
-      color: "success",
       content: `The command '${commandName}' was triggered!`,
       timeout: 1000,
     }),
     LoadUserConfiguration: (loadCallback) => ({
-      color: "success",
       content: "Previous session configuration found!",
       timeout: 6000,
       buttons: [
@@ -67,7 +64,6 @@ const SnackbarMessage = {
       timeout: 7000,
     },
     DidntSaveCommand: (saveCallback) => ({
-      color: "warning",
       content: "Your command changes weren't saved.",
       timeout: 4000,
       buttons: [
@@ -75,7 +71,6 @@ const SnackbarMessage = {
       ],
     }),
     DidntSaveExpression: (saveCallback) => ({
-      color: "warning",
       content: "Your expression changes weren't saved.",
       timeout: 4000,
       buttons: [
@@ -85,16 +80,19 @@ const SnackbarMessage = {
   }
 };
 
-const SnackbarMessageColors = {
+const SnackbarMessageColor = {
   Error: "error",
   Success: "success",
   Warning: "warning",
 };
 
 Object.keys(SnackbarMessage).forEach(msgType => {
-  Object.values(SnackbarMessage[msgType]).forEach(msg => {
-    if (msg instanceof Object) {
-      msg.color = SnackbarMessageColors[msgType];
+  Object.entries(SnackbarMessage[msgType]).forEach(([key, msg]) => {
+    if (msg instanceof Function) {
+      SnackbarMessage[msgType][key] = (args) => ({ color: SnackbarMessageColor[msgType], ...msg(args) });
+    }
+    else if (msg instanceof Object) {
+      msg.color = SnackbarMessageColor[msgType];
     }
   });
 });
