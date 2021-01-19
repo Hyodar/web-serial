@@ -235,7 +235,8 @@ export default {
       });
 
       try {
-        await this.browserSerial.requestPort(this.userOptions.serialConnection.serialOptions);
+        // {} on purpose: return all available ports
+        await this.browserSerial.requestPort({});
       }
       catch {
         this.setSnackbarMessage(SnackbarMessage.Error.NoPortSelected);

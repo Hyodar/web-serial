@@ -151,8 +151,6 @@ class BrowserSerial {
 
         this.serialReaderClosed = this.serialPort.readable
             .pipeTo(this.decoder.writable);
-
-        this.serialReader = this.decoder.readable.getReader();
         
         if (this.options.readLoopCallback) {
             this.readLoop();
@@ -169,12 +167,12 @@ class BrowserSerial {
 
         this.serialWriterClosed = this.encoder.readable
             .pipeTo(this.serialPort.writable);
-
-        this.serialWriter = this.encoder.writable.getWriter();
     }
 
     write(str) {
+        this.serialWriter = this.encoder.writable.getWriter();
         this.serialWriter.write(str);
+        this.serialWriter.releaseLock();
     }
 
     async read() {
@@ -182,59 +180,42 @@ class BrowserSerial {
     }
 
     async readLoop() {
-        let value;
-        let done;
+        while (this.active) {   
+            this.serialReader = this.decoder.readable.getReader();
 
-        for (;;) {
             try {
-                ({ value, done } = await this.serialReader.read());
+                for (;;) {
+                    const { value, done } = await this.serialReader.read();
+                    
+                    if (done) {
+                        this.serialReader.releaseLock();
+                        break;
+                    }
+                    
+                    this.options.readLoopCallback(value);
+                }
             }
             catch (e) {
-                if (e instanceof DOMException) {
-                    // forced disconnection
-                    break;
-                }
-
                 this.serialReader.releaseLock();
-                this.serialReader = this.decoder.readable.getReader();
             }
-
-            if (done) {
-                break;
-            }
-            
-            this.options.readLoopCallback(value);
         }
     }
 
-    async close(disconnect=false) {
+    async close() {
+        if (!this.active) return;
+
         this.active = false;
 
-        if (this.serialWriter) {
-            this.serialWriter.close();
-            await this.writableStreamClosed;
-        }
+        this.serialReader = (this.decoder.readable.locked)? this.serialReader : this.decoder.readable.getReader();
+        this.serialWriter = (this.encoder.writable.locked)? this.serialWriter : this.encoder.writable.getWriter();
 
-        if (this.serialReader) {
-            try {
-                await this.serialReader.cancel();
-            }
-            catch (e) {
-                // Forced disconnection triggers a reader exception,
-                // so even though it doesn't look good to do a try
-                // catch here, I did it
+        this.serialReader.cancel();
+        await this.serialReaderClosed.catch(() => {});
 
-                if (!(disconnect && e instanceof DOMException)) {
-                    throw e;
-                }
-            }
+        this.serialWriter.close();
+        await this.serialWriterClosed.catch(() => {});
 
-            await this.serialReaderClosed.catch(() => {});
-        }
-
-        if (this.serialPort) {
-            await this.serialPort.close();
-        }
+        await this.serialPort.close();
 
         this.serialReader = null;
         this.serialWriter = null;
@@ -250,7 +231,7 @@ class BrowserSerial {
     }
 
     setDefaultCallbacks() {
-        this.addEventListener("disconnect", this.close.bind(this, true));
+        this.addEventListener("disconnect", this.close.bind(this));
     }
 }
 
