@@ -146,8 +146,6 @@ export default {
 
     window.onbeforeunload = this.saveUserConfiguration.bind(this);
     this.tryLoadingUserConfiguration();
-
-    console.log(this.userOptions.serialConnection)
   },
 
   data: () => ({
