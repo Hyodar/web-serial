@@ -8,10 +8,6 @@ const SnackbarMessage = {
       content: "Your browser doesn't seem to have the TextEncoderStream class. Maybe check on its documentation?",
       timeout: -1,
     },
-    NoPortSelected: {
-      content: "No serial port selected. Connection stopped.",
-      timeout: 2000,
-    },
     ConnectionFailed: {
       content: "Your serial connection failed somehow. Please try again.",
       timeout: 3000,
@@ -55,6 +51,10 @@ const SnackbarMessage = {
     }),
   },
   Warning: {
+    NoPortSelected: {
+      content: "No serial port selected. Connection stopped.",
+      timeout: 2000,
+    },
     DeviceDisconnected: {
       content: "A previously paired device was disconnected.",
       timeout: 5000,

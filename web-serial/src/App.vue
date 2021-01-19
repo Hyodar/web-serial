@@ -239,7 +239,7 @@ export default {
         await this.browserSerial.requestPort({});
       }
       catch {
-        this.setSnackbarMessage(SnackbarMessage.Error.NoPortSelected);
+        this.setSnackbarMessage(SnackbarMessage.Warning.NoPortSelected);
         return;
       }
 
