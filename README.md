@@ -1,15 +1,6 @@
 # web-serial
 
+(This project is not being actively maintained since 2021, when I used it for a personal project. I'll leave it here as a WebSerial API usage example and, if anyone wants to submit a PR, I can also take a look at it.)
+
 A serial monitor you can actually use with **just your browser**.
-
-**No** additional downloads and **no** hassle.
 Just go to [hyodar.github.io/web-serial](https://hyodar.github.io/web-serial) and enjoy.
-
-**But**
-The WebSerialAPI, which is used in this project, is only implemented in a few browsers.
-Chromium-based browsers, like Chrome, Opera, Edge and some others already support this!
-
-## How to use
-
-Oh, you thought you needed a tutorial? Nah, you don't.
-I might as well write something here in the future, but, trust me, you'll be fine.
